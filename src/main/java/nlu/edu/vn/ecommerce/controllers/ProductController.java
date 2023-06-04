@@ -1,0 +1,138 @@
+package nlu.edu.vn.ecommerce.controllers;
+
+
+import io.swagger.annotations.ApiOperation;
+import nlu.edu.vn.ecommerce.exception.NotFoundException;
+import nlu.edu.vn.ecommerce.exception.ResponseArray;
+import nlu.edu.vn.ecommerce.exception.ResponseObject;
+import nlu.edu.vn.ecommerce.models.Product;
+import nlu.edu.vn.ecommerce.request.ProductRequest;
+import nlu.edu.vn.ecommerce.services.IProductService;
+import nlu.edu.vn.ecommerce.untils.Total;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/v1/products")
+public class ProductController {
+    @Autowired
+    private IProductService iProductService;
+
+    @GetMapping("")
+    @ApiOperation(value = "Get all products", notes = "Get all products with optional max result", response = ResponseArray.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful operation", response = ResponseArray.class),
+            @ApiResponse(code = 400, message = "Products not found", response = ResponseArray.class)
+    })
+    public ResponseEntity<?> getAllProducts(@RequestParam(name = "maxResult", defaultValue = "0") int maxResult) {
+        int total = iProductService.getAllProducts(0).toArray().length;
+        return ResponseEntity.ok().body(
+                new ResponseArray(total,"oke", "thành công", iProductService.getAllProducts(maxResult))
+        );
+
+    }
+
+    @PostMapping("")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> insertProduct(@RequestBody ProductRequest request,@RequestParam("userId") String userId) {
+        List<Product> products = iProductService.findProductByName(request.getName());
+        if (products.size() > 0) {
+            return ResponseEntity.badRequest().body(
+                    new ResponseObject("PRODUCT_FOUNDED", "Tên sản phẩm đã tồn tại", null)
+            );
+        }
+
+        Product product = iProductService.insertProduct(request,userId);
+        return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", product));
+    }
+    @GetMapping("/pagination")
+    @ApiOperation(value = "Get products pagination", notes = "Get products pagination", response = ResponseObject.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful operation", response = ResponseArray.class),
+            @ApiResponse(code = 400, message = "Products not found", response = ResponseObject.class)
+    })
+    public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "1") int size) {
+        return ResponseEntity.ok().body(new ResponseObject("oke","Thành công",iProductService.getProducts(page, size)));
+    }
+
+    @GetMapping("/{categoryId}/category")
+    public ResponseEntity<?> getProductsByCategory(@PathVariable String categoryId) {
+        if (iProductService.existsByCategoryId(categoryId)) {
+            return ResponseEntity.ok().body(new ResponseObject("oke","thành công",iProductService.getProductsByCategoryId(categoryId)));
+        } else {
+           return ResponseEntity.badRequest().body(new ResponseObject("Không tìm thấy sản phẩm","",null));
+        }
+
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject> findProductById(@PathVariable String id) {
+        Optional<Product> product = iProductService.getProductById(id);
+        if (product.isPresent()) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", product));
+        } else {
+            throw new NotFoundException("Không tìm thấy sản phẩm");
+        }
+    }
+    @GetMapping("/{shopId}/shops")
+    public ResponseEntity<?> GetAllProductByShopId(@PathVariable("shopId") String shopId) {
+        List<Product> products = iProductService.getAllProductByShopId(shopId);
+        if(products.size() > 0){
+            return ResponseEntity.ok().body(new ResponseArray(products.size(),"oke", "thành công", products));
+        }
+        else{
+            throw new NotFoundException("Không tìm thấy sản phẩm");
+        }
+    }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> updateProduct(@PathVariable("id") String productId, @RequestBody ProductRequest productRequest,@RequestParam String userId) {
+        boolean isUpdated = iProductService.updateProductById(productId, productRequest,userId);
+        if (isUpdated) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ResponseObject("failed", "Thất bại", null));
+        }
+    }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> deleteProduct(@PathVariable("id") String productId) {
+        boolean isDeleted = iProductService.deleteProductById(productId);
+        if (isDeleted) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ResponseObject("failed", "Thất bại", null));
+        }
+    }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchProducts(
+            @RequestParam(name = "search") String search,
+            @RequestParam(name = "maxResult", defaultValue = "0") int maxResult
+    ) {
+        List<Product> products = iProductService.findProductBySearch(search, maxResult);
+        int total = products.toArray().length;
+        if (!products.isEmpty()) {
+            return ResponseEntity.ok().body(new ResponseArray(total,"oke", "thành công", products));
+        } else {
+            throw new NotFoundException("Không tìm thấy sản phẩm");
+        }
+    }
+
+
+
+}

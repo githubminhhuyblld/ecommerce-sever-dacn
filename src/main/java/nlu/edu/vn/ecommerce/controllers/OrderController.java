@@ -1,0 +1,108 @@
+package nlu.edu.vn.ecommerce.controllers;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import nlu.edu.vn.ecommerce.dto.CartDTO;
+import nlu.edu.vn.ecommerce.exception.NotFoundException;
+import nlu.edu.vn.ecommerce.exception.ResponseArray;
+import nlu.edu.vn.ecommerce.exception.ResponseObject;
+import nlu.edu.vn.ecommerce.models.Cart;
+import nlu.edu.vn.ecommerce.models.Order;
+import nlu.edu.vn.ecommerce.models.User;
+import nlu.edu.vn.ecommerce.services.IOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
+
+@RequestMapping("/api/v1/order")
+@RestController
+public class OrderController {
+    @Autowired
+    private IOrderService iOrderService;
+
+    @PostMapping("")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    @PreAuthorize("#user.id == #userId")
+    public ResponseEntity<?> order(@ApiIgnore @AuthenticationPrincipal User user,@RequestBody CartDTO cartDTO,@RequestParam String userId) {
+        if (iOrderService.order(cartDTO,userId)) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "Đặt đơn hàng thành công", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ResponseObject("error", "Không có sản phẩm thanh toán", null));
+
+        }
+    }
+
+    @GetMapping("/{userId}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    @PreAuthorize("#user.id == #userId")
+    public ResponseEntity<?> getOrdersByUserId(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable("userId") String userId) {
+        List<Order> orders = iOrderService.getOrdersByUserId(userId);
+        if (orders == null) {
+            throw new NotFoundException("Không tìm thấy đơn hàng nào theo userId" +userId);
+        }
+        return ResponseEntity.ok().body(new ResponseObject("200", "Thành công", orders));
+
+    }
+    @GetMapping("")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> getAllOrders() {
+        return ResponseEntity.ok().body(new ResponseObject("200", "Thành công", iOrderService.getAllOrders()));
+    }
+    @PutMapping("/{orderId}/status/delivered")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> updateOrderStatusDelivered(@PathVariable String orderId) {
+       if(iOrderService.updateOrderStatusDelivered(orderId)){
+           return ResponseEntity.ok().body(new ResponseObject("oke","update status delivered thành công!",null));
+       }
+       else{
+           return ResponseEntity.badRequest().body(new ResponseObject("oke","update status delivered thất bại!",null));
+
+       }
+    }
+    @PutMapping("/{orderId}/status/canceled")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> updateOrderStatusCanceled(@PathVariable String orderId) {
+        if(iOrderService.updateOrderStatusCanceled(orderId)){
+            return ResponseEntity.ok().body(new ResponseObject("oke","update status canceled thành công!",null));
+        }
+        else{
+            return ResponseEntity.badRequest().body(new ResponseObject("oke","update status canceled thất bại!",null));
+
+        }
+    }
+
+    @GetMapping("/{shopId}/shop")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> getOrdersByShopId(@PathVariable String shopId) {
+        List<Order> orders = iOrderService.getOrdersByShopId(shopId);
+        if(orders != null){
+            return ResponseEntity.ok().body(new ResponseArray(orders.size(), "200", "Thành công", orders));
+        }
+        else{
+            throw new NotFoundException("Không tìm thấy order !!");
+        }
+    }
+
+
+}
