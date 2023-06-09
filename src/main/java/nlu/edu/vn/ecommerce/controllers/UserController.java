@@ -7,6 +7,7 @@ import nlu.edu.vn.ecommerce.dto.UserDTO;
 import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.repositories.UserRepository;
 
+import nlu.edu.vn.ecommerce.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,8 @@ import springfox.documentation.annotations.ApiIgnore;
 public class UserController {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private IUserService iUserService;
 
 
     @GetMapping("/me")
@@ -41,4 +44,15 @@ public class UserController {
     public ResponseEntity<?> getUserById( @PathVariable("id") String userId) {
         return ResponseEntity.ok().body(UserDTO.from(userRepository.findById(userId).orElseThrow()));
     }
+    @GetMapping("/check-username")
+    public ResponseEntity<Boolean> checkUsernameExists(@RequestParam("username") String username) {
+        boolean exists = iUserService.checkUsernameExits(username);
+        return ResponseEntity.ok(exists);
+    }
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmailExists(@RequestParam("email") String email) {
+        boolean exists = iUserService.checkEmailExits(email);
+        return ResponseEntity.ok(exists);
+    }
+
 }
