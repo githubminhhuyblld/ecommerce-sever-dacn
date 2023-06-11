@@ -2,10 +2,8 @@ package nlu.edu.vn.ecommerce.models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
+import nlu.edu.vn.ecommerce.base.BaseEntity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,11 +16,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@EqualsAndHashCode(callSuper = true)
 @Document
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
     @Id
     String id;
     @Indexed(unique = true)

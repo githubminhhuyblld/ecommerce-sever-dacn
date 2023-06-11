@@ -14,6 +14,7 @@ import nlu.edu.vn.ecommerce.repositories.UserRepository;
 import nlu.edu.vn.ecommerce.request.LoginRequest;
 import nlu.edu.vn.ecommerce.request.SignupRequest;
 import nlu.edu.vn.ecommerce.services.UserService;
+import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,6 +94,7 @@ public class AuthController {
         roles.add(roleUser);
         user.setRoles(roles);
         user.setServiceType(ServiceType.NORMAL);
+        user.setCreateAt(new Timestamp().getTime());
 
         userRepository.save(user);
 
