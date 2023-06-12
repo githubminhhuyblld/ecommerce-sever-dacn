@@ -44,6 +44,8 @@ public class Product extends BaseEntity {
     @NonNull
     private String categoryId;
 
+    private String rating;
+
     @NonNull
     private Shop shop;
 

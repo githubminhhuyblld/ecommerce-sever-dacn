@@ -3,6 +3,8 @@ package nlu.edu.vn.ecommerce.services;
 import nlu.edu.vn.ecommerce.models.Product;
 import nlu.edu.vn.ecommerce.request.ProductRequest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +22,7 @@ public interface IProductService {
     boolean deleteProductById(String productId);
     Optional<Product> getProductById(String id);
     boolean updateProductById(String productId, ProductRequest productRequest,String userId);
-    List<Product> findProductBySearch(String search, int maxResult);
+    Page<Product> findProductBySearch(String search, Pageable pageable);
 
     List<Product> getAllProductByShopId(String shopId);
 

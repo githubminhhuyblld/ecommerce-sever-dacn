@@ -11,6 +11,7 @@ import nlu.edu.vn.ecommerce.services.IProductService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class ProductServiceImpl implements IProductService {
         }
         User user = userOptional.get();
         Optional<Shop> optionalShop = shopRepository.findById(user.getShopId());
-        if(optionalShop.isEmpty()){
+        if (optionalShop.isEmpty()) {
             throw new NotFoundException("Không tìm thấy Shop!");
         }
         Shop shop = optionalShop.get();
@@ -62,6 +63,7 @@ public class ProductServiceImpl implements IProductService {
         product.setQuantity(request.getQuantity());
         product.setSale(request.getSale());
         product.setCategoryId(request.getCategoryId());
+        product.setRating(request.getRating());
         product.setCreateAt(new Timestamp().getTime());
         product.setCreateBy(userId);
         product.setShop(shop);
@@ -144,7 +146,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public boolean updateProductById(String productId, ProductRequest productRequest,String userId) {
+    public boolean updateProductById(String productId, ProductRequest productRequest, String userId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
         if (optionalProduct.isPresent()) {
             Product existingProduct = optionalProduct.get();
@@ -179,6 +181,7 @@ public class ProductServiceImpl implements IProductService {
             existingProduct.setDescription(productRequest.getDescription());
             existingProduct.setQuantity(productRequest.getQuantity());
             existingProduct.setSale(productRequest.getSale());
+            existingProduct.setRating(productRequest.getRating());
             existingProduct.setCategoryId(productRequest.getCategoryId());
             existingProduct.setUpdateAt(new Timestamp().getTime());
             existingProduct.setUpdateBy(userId);
@@ -191,24 +194,25 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<Product> findProductBySearch(String search, int maxResult) {
+    public Page<Product> findProductBySearch(String search, Pageable pageable) {
         List<Product> productList = productRepository.findByNameContainingIgnoreCase(search);
+
         if (!productList.isEmpty()) {
-            return maxResult > 0 ? productList.stream().limit(maxResult).collect(Collectors.toList()) : productList;
+            return applyMaxResult(productList, pageable);
         }
 
         List<Category> categoryList = categoryRepository.findByNameContainingIgnoreCase(search);
         if (!categoryList.isEmpty()) {
             List<String> categoryIds = categoryList.stream().map(Category::getId).collect(Collectors.toList());
-            if (maxResult <= 0) {
-                return productRepository.findByCategoryIdIn(categoryIds);
-            } else {
-                Page<Product> products = productRepository.findByCategoryIdIn(categoryIds, PageRequest.of(0, maxResult));
-                return products.getContent();
-            }
+            return productRepository.findByCategoryIdIn(categoryIds, pageable);
         }
 
-        return Collections.emptyList();
+        return Page.empty();
+    }
+
+    private Page<Product> applyMaxResult(List<Product> productList, Pageable pageable) {
+        List<Product> limitedList = pageable.isUnpaged() ? productList : productList.stream().limit(pageable.getPageSize()).collect(Collectors.toList());
+        return new PageImpl<>(limitedList, pageable, productList.size());
     }
 
     @Override

@@ -10,6 +10,9 @@ import nlu.edu.vn.ecommerce.request.ProductRequest;
 import nlu.edu.vn.ecommerce.services.IProductService;
 import nlu.edu.vn.ecommerce.untils.Total;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -120,14 +123,16 @@ public class ProductController {
         }
     }
     @GetMapping("/search")
-    public ResponseEntity<?> searchProducts(
+    public ResponseEntity<Page<Product>> searchProducts(
             @RequestParam(name = "search") String search,
-            @RequestParam(name = "maxResult", defaultValue = "0") int maxResult
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size
     ) {
-        List<Product> products = iProductService.findProductBySearch(search, maxResult);
-        int total = products.toArray().length;
-        if (!products.isEmpty()) {
-            return ResponseEntity.ok().body(new ResponseArray(total,"oke", "thành công", products));
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> products = iProductService.findProductBySearch(search, pageable);
+
+        if (products.hasContent()) {
+            return ResponseEntity.ok(products);
         } else {
             throw new NotFoundException("Không tìm thấy sản phẩm");
         }
