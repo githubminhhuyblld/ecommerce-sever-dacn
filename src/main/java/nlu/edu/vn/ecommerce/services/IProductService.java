@@ -16,7 +16,7 @@ public interface IProductService {
     List<Product> getAllProducts(int maxResult);
 
     Page<Product> getProducts(int page, int size);
-    List<Product> getProductsByCategoryId(String categoryId);
+    Page<Product> getProductsByCategoryId(String categoryId, Pageable pageable);
 
     boolean existsByCategoryId(String categoryId);
     boolean deleteProductById(String productId);

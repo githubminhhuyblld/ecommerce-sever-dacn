@@ -64,18 +64,24 @@ public class ProductController {
             @ApiResponse(code = 400, message = "Products not found", response = ResponseObject.class)
     })
     public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int page,
-                                     @RequestParam(defaultValue = "1") int size) {
+                                     @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok().body(new ResponseObject("oke","Thành công",iProductService.getProducts(page, size)));
     }
 
     @GetMapping("/{categoryId}/category")
-    public ResponseEntity<?> getProductsByCategory(@PathVariable String categoryId) {
-        if (iProductService.existsByCategoryId(categoryId)) {
-            return ResponseEntity.ok().body(new ResponseObject("oke","thành công",iProductService.getProductsByCategoryId(categoryId)));
-        } else {
-           return ResponseEntity.badRequest().body(new ResponseObject("Không tìm thấy sản phẩm","",null));
-        }
+    public ResponseEntity<?> getProductsByCategory(
+            @PathVariable String categoryId,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> products = iProductService.getProductsByCategoryId(categoryId, pageable);
 
+        if (products.hasContent()) {
+            return ResponseEntity.ok(products);
+        } else {
+            return ResponseEntity.badRequest().body( new ResponseObject("Không tìm thấy sản phẩm", "", null));
+        }
     }
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject> findProductById(@PathVariable String id) {
@@ -125,7 +131,7 @@ public class ProductController {
     @GetMapping("/search")
     public ResponseEntity<Page<Product>> searchProducts(
             @RequestParam(name = "search") String search,
-            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "5") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);

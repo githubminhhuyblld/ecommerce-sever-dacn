@@ -121,8 +121,29 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<Product> getProductsByCategoryId(String categoryId) {
-        return productRepository.findByCategoryId(categoryId);
+    public Page<Product> getProductsByCategoryId(String categoryId, Pageable pageable) {
+        List<Product> productList = productRepository.findByCategoryIdIn(Collections.singletonList(categoryId));
+
+        if (!productList.isEmpty()) {
+            return applyPagination(productList, pageable);
+        }
+
+        return Page.empty();
+    }
+    private Page<Product> applyPagination(List<Product> productList, Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        List<Product> pagedList;
+
+        if (productList.size() < startItem) {
+            pagedList = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, productList.size());
+            pagedList = productList.subList(startItem, toIndex);
+        }
+
+        return new PageImpl<>(pagedList, pageable, productList.size());
     }
 
     @Override
