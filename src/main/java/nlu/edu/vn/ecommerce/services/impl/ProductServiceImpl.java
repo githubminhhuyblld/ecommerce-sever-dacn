@@ -232,7 +232,11 @@ public class ProductServiceImpl implements IProductService {
     }
 
     private Page<Product> applyMaxResult(List<Product> productList, Pageable pageable) {
-        List<Product> limitedList = pageable.isUnpaged() ? productList : productList.stream().limit(pageable.getPageSize()).collect(Collectors.toList());
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), productList.size());
+
+        List<Product> limitedList = productList.subList(start, end);
+
         return new PageImpl<>(limitedList, pageable, productList.size());
     }
 

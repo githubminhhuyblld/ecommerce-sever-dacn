@@ -131,8 +131,8 @@ public class ProductController {
     @GetMapping("/search")
     public ResponseEntity<Page<Product>> searchProducts(
             @RequestParam(name = "search") String search,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> products = iProductService.findProductBySearch(search, pageable);
