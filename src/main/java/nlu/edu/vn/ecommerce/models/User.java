@@ -48,9 +48,12 @@ public class User extends BaseEntity implements UserDetails {
 
     private ServiceType serviceType;
 
+    private List<Address> address;
+
     private List<Role> roles;
 
     private String shopId;
+
 
     public User(String id, @NonNull String username, @NonNull String password) {
         this.id = id;
@@ -58,6 +61,7 @@ public class User extends BaseEntity implements UserDetails {
         this.password = password;
 
     }
+
     public User(String id, @NonNull String username, @NonNull String password, List<Role> roles) {
         this.id = id;
         this.username = username;
@@ -75,7 +79,7 @@ public class User extends BaseEntity implements UserDetails {
         this.numberPhone = numberPhone;
     }
 
-    public User(@NonNull String username, @NonNull String email, @NonNull String password, @NonNull String firstName, @NonNull String lastName, @NonNull String numberPhone, @NonNull String image,GenderType gender,String birthday) {
+    public User(@NonNull String username, @NonNull String email, @NonNull String password, @NonNull String firstName, @NonNull String lastName, @NonNull String numberPhone, @NonNull String image, GenderType gender, String birthday) {
         this.username = username;
         this.email = email;
         this.password = password;

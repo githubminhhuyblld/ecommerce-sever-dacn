@@ -40,6 +40,8 @@ public class UserDTO {
 
     private String shopId ;
 
+    private List<Address> address;
+
 
     public static ResponseObject from(User user) {
         return new ResponseObject("ok", "thành công", builder()
@@ -54,6 +56,7 @@ public class UserDTO {
                 .dateOfBirth(user.getDateOfBirth())
                 .serviceType(user.getServiceType())
                 .roles(user.getRoles())
+                .address(user.getAddress())
                 .shopId(user.getShopId())
                 .build());
     }

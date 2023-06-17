@@ -4,9 +4,12 @@ package nlu.edu.vn.ecommerce.controllers;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import nlu.edu.vn.ecommerce.dto.UserDTO;
+import nlu.edu.vn.ecommerce.exception.ResponseObject;
+import nlu.edu.vn.ecommerce.models.Address;
 import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.repositories.UserRepository;
 
+import nlu.edu.vn.ecommerce.request.AddressRequest;
 import nlu.edu.vn.ecommerce.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,18 +44,26 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
-    public ResponseEntity<?> getUserById( @PathVariable("id") String userId) {
+    public ResponseEntity<?> getUserById(@PathVariable("id") String userId) {
         return ResponseEntity.ok().body(UserDTO.from(userRepository.findById(userId).orElseThrow()));
     }
+
     @GetMapping("/check-username")
     public ResponseEntity<Boolean> checkUsernameExists(@RequestParam("username") String username) {
         boolean exists = iUserService.checkUsernameExits(username);
         return ResponseEntity.ok(exists);
     }
+
     @GetMapping("/check-email")
     public ResponseEntity<Boolean> checkEmailExists(@RequestParam("email") String email) {
         boolean exists = iUserService.checkEmailExits(email);
         return ResponseEntity.ok(exists);
+    }
+
+    @PostMapping("/{userId}/addresses")
+    public ResponseEntity<?> addAddress(@PathVariable("userId") String userId, @RequestBody AddressRequest address) {
+        iUserService.addAddressByUserId(userId, address);
+        return ResponseEntity.ok().body(new ResponseObject("oke","Thành công",null));
     }
 
 }
