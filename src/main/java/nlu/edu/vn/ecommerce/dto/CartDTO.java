@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 public class CartDTO {
 
+    private String userId;
 
     private String name;
 
@@ -16,8 +17,8 @@ public class CartDTO {
 
     private String numberPhone;
 
-
     private List<CartItem> cartItems;
+
     private BigDecimal totalPrice;
 
     private String address;

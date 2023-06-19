@@ -60,7 +60,7 @@ public class OrderServiceImpl implements IOrderService {
             }
 
             orderRepository.saveAll(orders);
-//            cartRepository.deleteByUserId(cartDTO.getUserId());
+            cartRepository.deleteByUserId(cartDTO.getUserId());
             return true;
         }
         return false;
