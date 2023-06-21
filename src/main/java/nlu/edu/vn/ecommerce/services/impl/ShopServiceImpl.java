@@ -12,7 +12,6 @@ import nlu.edu.vn.ecommerce.request.ShopRequest;
 import nlu.edu.vn.ecommerce.services.IShopService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,36 +35,36 @@ public class ShopServiceImpl implements IShopService {
 
     @Override
     public Shop registerShop(String userId, ShopRequest shopRequest)  {
-//        Optional<User> optionalUser = userRepository.findById(userId);
-//        if (optionalUser.isEmpty()) {
-//            throw new NotFoundException("Không tìm thấy user");
-//        }
-//        User user = optionalUser.get();
-//        if (user.getShopId() != null) {
-//            throw new DuplicateRecordException("User already has a shop");
-//        }
-//        Shop shop = new Shop();
-//        shop.setName(shopRequest.getName());
-//        shop.setDescription(shopRequest.getDescription());
-//        shop.setImage(shopRequest.getImage());
-//        shop.setAddress(shopRequest.getAddress());
-//        shop.setActiveStatus(ActiveStatus.ACTIVE);
-//        shop.setCreateAt(new Timestamp().getTime());
-//        shop.setCreateBy(userId);
-//        shopRepository.save(shop);
-//
-//        user.setShopId(shop.getId());
-//        List<Role> roles = user.getRoles();
-//        boolean isAdmin = roles.stream()
-//                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
-//
-//        if (!isAdmin) {
-//            Role roleAdmin = roleRepository.findByName("ROLE_ADMIN");
-//            roles.add(roleAdmin);
-//            user.setRoles(roles);
-//        }
-//        userRepository.save(user);
-//        return shop;
-        return null;
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (!optionalUser.isPresent()) {
+            throw new NotFoundException("Không tìm thấy user");
+        }
+        User user = optionalUser.get();
+        if (user.getShopId() != null) {
+            throw new DuplicateRecordException("User already has a shop");
+        }
+        Shop shop = new Shop();
+        shop.setName(shopRequest.getName());
+        shop.setDescription(shopRequest.getDescription());
+        shop.setImage(shopRequest.getImage());
+        shop.setAddress(shopRequest.getAddress());
+        shop.setActiveStatus(ActiveStatus.ACTIVE);
+        shop.setCreateAt(new Timestamp().getTime());
+        shop.setCreateBy(userId);
+        shopRepository.save(shop);
+
+        user.setShopId(shop.getId());
+        List<Role> roles = user.getRoles();
+        boolean isAdmin = roles.stream()
+                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            Role roleAdmin = roleRepository.findByName("ROLE_ADMIN");
+            roles.add(roleAdmin);
+            user.setRoles(roles);
+        }
+        userRepository.save(user);
+        return shop;
+
     }
 }
