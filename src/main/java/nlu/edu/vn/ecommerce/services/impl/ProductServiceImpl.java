@@ -42,67 +42,68 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public Product insertProduct(ProductRequest request, String userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NotFoundException("Không tìm thấy user!");
-        }
-        User user = userOptional.get();
-        Optional<Shop> optionalShop = shopRepository.findById(user.getShopId());
-        if (optionalShop.isEmpty()) {
-            throw new NotFoundException("Không tìm thấy Shop!");
-        }
-        Shop shop = optionalShop.get();
-
-
-        Product product = new Product();
-        product.setName(request.getName());
-        product.setMainImage(request.getMainImage());
-        product.setNewPrice(request.getNewPrice());
-        product.setOldPrice(request.getOldPrice());
-        product.setDescription(request.getDescription());
-        product.setQuantity(request.getQuantity());
-        product.setSale(request.getSale());
-        product.setCategoryId(request.getCategoryId());
-        product.setRating(request.getRating());
-        product.setCreateAt(new Timestamp().getTime());
-        product.setCreateBy(userId);
-        product.setShop(shop);
-
-        List<Image> images = new ArrayList<>();
-        if (request.getImages() != null) {
-            for (Image image : request.getImages()) {
-                Image newImage = new Image();
-                newImage.setId(UUID.randomUUID().toString());
-                newImage.setImgUrl(image.getImgUrl());
-                images.add(newImage);
-            }
-            product.setImages(images);
-        }
-
-        List<Color> colors = new ArrayList<>();
-        if (request.getColors() != null) {
-            for (Color color : request.getColors()) {
-                Color newColor = new Color();
-                newColor.setId(UUID.randomUUID().toString());
-                newColor.setColorName(color.getColorName());
-                colors.add(newColor);
-            }
-            product.setColors(colors);
-        }
-
-        List<Size> sizes = new ArrayList<>();
-        if (request.getSizes() != null) {
-            for (Size size : request.getSizes()) {
-                Size newSize = new Size();
-                newSize.setId(UUID.randomUUID().toString());
-                newSize.setName(size.getName());
-                sizes.add(newSize);
-            }
-            product.setSizes(sizes);
-        }
-
-
-        return productRepository.save(product);
+//        Optional<User> userOptional = userRepository.findById(userId);
+//        if (userOptional.isEmpty()) {
+//            throw new NotFoundException("Không tìm thấy user!");
+//        }
+//        User user = userOptional.get();
+//        Optional<Shop> optionalShop = shopRepository.findById(user.getShopId());
+//        if (optionalShop.isEmpty()) {
+//            throw new NotFoundException("Không tìm thấy Shop!");
+//        }
+//        Shop shop = optionalShop.get();
+//
+//
+//        Product product = new Product();
+//        product.setName(request.getName());
+//        product.setMainImage(request.getMainImage());
+//        product.setNewPrice(request.getNewPrice());
+//        product.setOldPrice(request.getOldPrice());
+//        product.setDescription(request.getDescription());
+//        product.setQuantity(request.getQuantity());
+//        product.setSale(request.getSale());
+//        product.setCategoryId(request.getCategoryId());
+//        product.setRating(request.getRating());
+//        product.setCreateAt(new Timestamp().getTime());
+//        product.setCreateBy(userId);
+//        product.setShop(shop);
+//
+//        List<Image> images = new ArrayList<>();
+//        if (request.getImages() != null) {
+//            for (Image image : request.getImages()) {
+//                Image newImage = new Image();
+//                newImage.setId(UUID.randomUUID().toString());
+//                newImage.setImgUrl(image.getImgUrl());
+//                images.add(newImage);
+//            }
+//            product.setImages(images);
+//        }
+//
+//        List<Color> colors = new ArrayList<>();
+//        if (request.getColors() != null) {
+//            for (Color color : request.getColors()) {
+//                Color newColor = new Color();
+//                newColor.setId(UUID.randomUUID().toString());
+//                newColor.setColorName(color.getColorName());
+//                colors.add(newColor);
+//            }
+//            product.setColors(colors);
+//        }
+//
+//        List<Size> sizes = new ArrayList<>();
+//        if (request.getSizes() != null) {
+//            for (Size size : request.getSizes()) {
+//                Size newSize = new Size();
+//                newSize.setId(UUID.randomUUID().toString());
+//                newSize.setName(size.getName());
+//                sizes.add(newSize);
+//            }
+//            product.setSizes(sizes);
+//        }
+//
+//
+//        return productRepository.save(product);
+        return null;
     }
 
     @Override

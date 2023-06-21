@@ -40,13 +40,13 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
-    })
-    public ResponseEntity<?> getUserById(@PathVariable("id") String userId) {
-        return ResponseEntity.ok().body(UserDTO.from(userRepository.findById(userId).orElseThrow()));
-    }
+//    @GetMapping("/{id}")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+//    })
+//    public ResponseEntity<?> getUserById(@PathVariable("id") String userId) {
+//        return ResponseEntity.ok().body(UserDTO.from(userRepository.findById(userId).orElseThrow()));
+//    }
 
     @GetMapping("/check-username")
     public ResponseEntity<Boolean> checkUsernameExists(@RequestParam("username") String username) {

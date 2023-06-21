@@ -27,47 +27,49 @@ public class DistrictServiceImpl implements IDistrictService {
 
     @Override
     public District addDistrict(String provinceId, DistrictRequest request) {
-        Optional<Province> optionalProvince = provinceRepository.findById(provinceId);
-        if (optionalProvince.isEmpty()) {
-            throw new NotFoundException("Không tồn tại id tỉnh này");
-        }
-        District existingDistrict = districtRepository.findByName(request.getName());
-        if (existingDistrict != null) {
-            throw new DuplicateRecordException("Tên Quận,huyện,thành phố đã tồn tại");
-        }
-        District district = new District();
+//        Optional<Province> optionalProvince = provinceRepository.findById(provinceId);
+//        if (optionalProvince.isEmpty()) {
+//            throw new NotFoundException("Không tồn tại id tỉnh này");
+//        }
+//        District existingDistrict = districtRepository.findByName(request.getName());
+//        if (existingDistrict != null) {
+//            throw new DuplicateRecordException("Tên Quận,huyện,thành phố đã tồn tại");
+//        }
+//        District district = new District();
+//
+//        Province province = optionalProvince.get();
+//        List<District> districts = province.getDistricts();
+//        if (districts == null) {
+//            districts = new ArrayList<>();
+//
+//        }
+//        district.setName(request.getName());
+//        districts.add(district);
+//        province.setDistricts(districts);
+//        districtRepository.save(district);
+//        provinceRepository.save(province);
 
-        Province province = optionalProvince.get();
-        List<District> districts = province.getDistricts();
-        if (districts == null) {
-            districts = new ArrayList<>();
-
-        }
-        district.setName(request.getName());
-        districts.add(district);
-        province.setDistricts(districts);
-        districtRepository.save(district);
-        provinceRepository.save(province);
-
-        return district;
+//        return district;
+        return null;
     }
 
     @Override
     public List<DistrictDTO> getDistrictByProvinceId(String provinceId) {
-        Optional<Province> optionalProvince = provinceRepository.findById(provinceId);
-        if (optionalProvince.isEmpty()) {
-            throw new NotFoundException("Không tồn tại id tỉnh này");
-        }
-
-        List<District> districts = optionalProvince.get().getDistricts();
-        List<DistrictDTO> districtDTOs = new ArrayList<>();
-
-        for (District district : districts) {
-            DistrictDTO districtDTO = DistrictDTO.fromDistrict(district);
-            districtDTOs.add(districtDTO);
-        }
-
-        return districtDTOs;
+//        Optional<Province> optionalProvince = provinceRepository.findById(provinceId);
+//        if (optionalProvince.isEmpty()) {
+//            throw new NotFoundException("Không tồn tại id tỉnh này");
+//        }
+//
+//        List<District> districts = optionalProvince.get().getDistricts();
+//        List<DistrictDTO> districtDTOs = new ArrayList<>();
+//
+//        for (District district : districts) {
+//            DistrictDTO districtDTO = DistrictDTO.fromDistrict(district);
+//            districtDTOs.add(districtDTO);
+//        }
+//
+//        return districtDTOs;
+        return null;
     }
 
 

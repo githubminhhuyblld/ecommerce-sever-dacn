@@ -24,34 +24,36 @@ public class WardServiceImpl implements IWardService {
 
     @Override
     public Ward addWards(String districtId,WardRequest request) {
-        Optional<District> optionalDistrict = districtRepository.findById(districtId);
-        if (optionalDistrict.isEmpty()) {
-            throw new NotFoundException("Không tồn tại id quận,huyện,tp này");
-        }
-        Ward existingWard = wardRepository.findByName(request.getName());
-        if (existingWard != null) {
-            throw new DuplicateRecordException("Tên phường,xã đã tồn tại");
-        }
-        Ward ward = new Ward();
-        District district = optionalDistrict.get();
-        List<Ward> wards = district.getWards();
-        if (wards == null) {
-            wards = new ArrayList<>();
-        }
-        ward.setName(request.getName());
-        wards.add(ward);
-        district.setWards(wards);
-        wardRepository.save(ward);
-        districtRepository.save(district);
-        return ward;
+//        Optional<District> optionalDistrict = districtRepository.findById(districtId);
+//        if (optionalDistrict.isEmpty()) {
+//            throw new NotFoundException("Không tồn tại id quận,huyện,tp này");
+//        }
+//        Ward existingWard = wardRepository.findByName(request.getName());
+//        if (existingWard != null) {
+//            throw new DuplicateRecordException("Tên phường,xã đã tồn tại");
+//        }
+//        Ward ward = new Ward();
+//        District district = optionalDistrict.get();
+//        List<Ward> wards = district.getWards();
+//        if (wards == null) {
+//            wards = new ArrayList<>();
+//        }
+//        ward.setName(request.getName());
+//        wards.add(ward);
+//        district.setWards(wards);
+//        wardRepository.save(ward);
+//        districtRepository.save(district);
+//        return ward;
+        return null;
     }
 
     @Override
     public List<Ward> getWardsByDistrictId(String districtId) {
-        Optional<District> optionalDistrict = districtRepository.findById(districtId);
-        if (optionalDistrict.isEmpty()) {
-            throw new NotFoundException("Không tồn tại id tp,quận,huyện này");
-        }
-        return optionalDistrict.get().getWards();
+//        Optional<District> optionalDistrict = districtRepository.findById(districtId);
+//        if (optionalDistrict.isEmpty()) {
+//            throw new NotFoundException("Không tồn tại id tp,quận,huyện này");
+//        }
+//        return optionalDistrict.get().getWards();
+        return null;
     }
 }
