@@ -6,6 +6,7 @@ import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.exception.ResponseArray;
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
 import nlu.edu.vn.ecommerce.models.Product;
+import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.request.ProductRequest;
 import nlu.edu.vn.ecommerce.services.IProductService;
 import nlu.edu.vn.ecommerce.untils.Total;
@@ -15,8 +16,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.Optional;
@@ -93,7 +96,11 @@ public class ProductController {
         }
     }
     @GetMapping("/{shopId}/shops")
-    public ResponseEntity<?> GetAllProductByShopId(@PathVariable("shopId") String shopId) {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    @PreAuthorize("#user.id == #userId")
+    public ResponseEntity<?> GetAllProductByShopId(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable("shopId") String shopId,@RequestParam String userId) {
         List<Product> products = iProductService.getAllProductByShopId(shopId);
         if(products.size() > 0){
             return ResponseEntity.ok().body(new ResponseArray(products.size(),"oke", "thành công", products));
