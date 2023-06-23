@@ -43,6 +43,9 @@ public class ShopServiceImpl implements IShopService {
         if (user.getShopId() != null) {
             throw new DuplicateRecordException("User already has a shop");
         }
+        if (shopRepository.existsByName(shopRequest.getName())) {
+            throw new DuplicateRecordException("Tên shop đã tồn tại");
+        }
         Shop shop = new Shop();
         shop.setName(shopRequest.getName());
         shop.setDescription(shopRequest.getDescription());
@@ -67,4 +70,10 @@ public class ShopServiceImpl implements IShopService {
         return shop;
 
     }
+
+    @Override
+    public boolean checkExitsName(String name) {
+        return shopRepository.existsByName(name);
+    }
+
 }

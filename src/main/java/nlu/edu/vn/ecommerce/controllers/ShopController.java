@@ -42,4 +42,9 @@ public class ShopController {
         }
         return ResponseEntity.ok().body(new ResponseObject("oke","thành công",shop));
     }
+    @GetMapping("/check-name")
+    public ResponseEntity<Boolean> checkEmailExists(@RequestParam("name") String name) {
+        boolean exists = iShopService.checkExitsName(name);
+        return ResponseEntity.ok(exists);
+    }
 }

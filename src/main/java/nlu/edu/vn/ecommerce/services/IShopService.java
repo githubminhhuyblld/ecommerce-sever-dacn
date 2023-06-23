@@ -6,5 +6,8 @@ import nlu.edu.vn.ecommerce.request.ShopRequest;
 
 public interface IShopService {
     Shop getShopById(String id);
-    Shop registerShop(String userId, ShopRequest shopRequest) ;
+
+    Shop registerShop(String userId, ShopRequest shopRequest);
+
+    boolean checkExitsName(String name);
 }
