@@ -16,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -53,15 +55,27 @@ public class ProductServiceImpl implements IProductService {
         }
         Shop shop = optionalShop.get();
 
+        BigDecimal oldPrice = request.getOldPrice();
+        BigDecimal newPrice = request.getNewPrice();
+        int sale;
+        if (oldPrice.compareTo(newPrice) < 0) {
+            sale = 0;
+        } else if (oldPrice.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal difference = oldPrice.subtract(newPrice);
+            BigDecimal salePercentage = difference.divide(oldPrice, 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+            sale = salePercentage.setScale(0, RoundingMode.HALF_UP).intValue();
+        } else {
+            sale = 0;
+        }
 
         Product product = new Product();
         product.setName(request.getName());
+        product.setSale(sale);
         product.setMainImage(request.getMainImage());
         product.setNewPrice(request.getNewPrice());
         product.setOldPrice(request.getOldPrice());
         product.setDescription(request.getDescription());
         product.setQuantity(request.getQuantity());
-        product.setSale(request.getSale());
         product.setCategoryId(request.getCategoryId());
         product.setRating(request.getRating());
         product.setCreateAt(new Timestamp().getTime());
@@ -130,6 +144,7 @@ public class ProductServiceImpl implements IProductService {
 
         return Page.empty();
     }
+
     private Page<Product> applyPagination(List<Product> productList, Pageable pageable) {
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
@@ -197,11 +212,18 @@ public class ProductServiceImpl implements IProductService {
             });
             existingProduct.setSizes(mappedSizes);
 
-            existingProduct.setNewPrice(productRequest.getNewPrice());
-            existingProduct.setOldPrice(productRequest.getOldPrice());
+            BigDecimal oldPrice = productRequest.getOldPrice();
+            BigDecimal newPrice = productRequest.getNewPrice();
+            int sale = 0;
+            if (oldPrice.compareTo(newPrice) > 0) {
+                BigDecimal difference = oldPrice.subtract(newPrice);
+                BigDecimal salePercentage = difference.divide(oldPrice, 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+                sale = salePercentage.setScale(0, RoundingMode.HALF_UP).intValue();
+            }
+            existingProduct.setSale(sale);
+
             existingProduct.setDescription(productRequest.getDescription());
             existingProduct.setQuantity(productRequest.getQuantity());
-            existingProduct.setSale(productRequest.getSale());
             existingProduct.setRating(productRequest.getRating());
             existingProduct.setCategoryId(productRequest.getCategoryId());
             existingProduct.setUpdateAt(new Timestamp().getTime());
@@ -213,6 +235,7 @@ public class ProductServiceImpl implements IProductService {
             return false;
         }
     }
+
 
     @Override
     public Page<Product> findProductBySearch(String search, Pageable pageable) {

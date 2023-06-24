@@ -34,9 +34,6 @@ public class ProductRequest {
     private int quantity;
 
     @JsonProperty(required = false)
-    private int sale;
-
-    @JsonProperty(required = false)
     private String rating;
 
     private String categoryId;
