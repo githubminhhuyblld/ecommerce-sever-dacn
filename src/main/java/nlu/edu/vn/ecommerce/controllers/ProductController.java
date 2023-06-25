@@ -9,7 +9,6 @@ import nlu.edu.vn.ecommerce.models.Product;
 import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.request.ProductRequest;
 import nlu.edu.vn.ecommerce.services.IProductService;
-import nlu.edu.vn.ecommerce.untils.Total;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,11 +50,11 @@ public class ProductController {
     })
     public ResponseEntity<?> insertProduct(@RequestBody ProductRequest request,@RequestParam("userId") String userId) {
         List<Product> products = iProductService.findProductByName(request.getName());
-        if (products.size() > 0) {
-            return ResponseEntity.badRequest().body(
-                    new ResponseObject("PRODUCT_FOUNDED", "Tên sản phẩm đã tồn tại", null)
-            );
-        }
+//        if (products.size() > 0) {
+//            return ResponseEntity.badRequest().body(
+//                    new ResponseObject("PRODUCT_FOUNDED", "Tên sản phẩm đã tồn tại", null)
+//            );
+//        }
 
         Product product = iProductService.insertProduct(request,userId);
         return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", product));
@@ -123,11 +122,11 @@ public class ProductController {
         }
     }
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("#user.id == #userId")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
-    public ResponseEntity<?> deleteProduct(@PathVariable("id") String productId) {
+    public ResponseEntity<?> deleteProduct(@ApiIgnore @AuthenticationPrincipal User user,@PathVariable("id") String productId,@RequestParam String userId) {
         boolean isDeleted = iProductService.deleteProductById(productId);
         if (isDeleted) {
             return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", null));
