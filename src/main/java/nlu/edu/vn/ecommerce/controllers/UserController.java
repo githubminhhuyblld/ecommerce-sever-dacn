@@ -69,5 +69,19 @@ public class UserController {
         iUserService.addAddressByUserId(userId, address);
         return ResponseEntity.ok().body(new ResponseObject("oke","Thành công",null));
     }
+    @PutMapping("/{userId}/addresses")
+    public ResponseEntity<?> updateAddressById(@RequestParam String id,@PathVariable("userId") String userId, @RequestBody AddressRequest address) {
+        iUserService.updateAddressById(userId,id, address);
+        return ResponseEntity.ok().body(new ResponseObject("oke","Update Thành công",null));
+    }
+    @GetMapping("/addresses/{addressId}")
+    public ResponseEntity<?> getAddressById(@PathVariable("addressId") String addressId) {
+        Address address = iUserService.getAddressById(addressId);
+        if (address != null) {
+            return ResponseEntity.ok().body(address);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }

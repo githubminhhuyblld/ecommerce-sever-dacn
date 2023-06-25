@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -46,4 +47,44 @@ public class UserServiceImpl implements IUserService {
         user.setAddress(userAddresses);
         userRepository.save(user);
     }
+
+    @Override
+    public void updateAddressById(String userId, String addressId, AddressRequest addressRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        Address updatedAddress = user.getAddress()
+                .stream()
+                .filter(address -> address.getId().equals(addressId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Address not found with id: " + addressId));
+
+        updatedAddress.setProvinceId(addressRequest.getProvinceId());
+        updatedAddress.setDistrictId(addressRequest.getDistrictId());
+        updatedAddress.setWardId(addressRequest.getWardId());
+        updatedAddress.setFullName(addressRequest.getFullName());
+        updatedAddress.setNumberPhone(addressRequest.getNumberPhone());
+        updatedAddress.setFullAddress(addressRequest.getFullAddress());
+        updatedAddress.setAddress(addressRequest.getAddress());
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public Address getAddressById(String addressId) {
+        Optional<User> userOptional = userRepository.findByAddressId(addressId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            List<Address> addresses = user.getAddress();
+            if (addresses != null) {
+                for (Address address : addresses) {
+                    if (address.getId().equals(addressId)) {
+                        return address;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 }
