@@ -4,6 +4,8 @@ import nlu.edu.vn.ecommerce.dto.CartDTO;
 import nlu.edu.vn.ecommerce.models.Cart;
 import nlu.edu.vn.ecommerce.models.Order;
 import nlu.edu.vn.ecommerce.models.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,7 +14,7 @@ public interface IOrderService {
 
     List<Order> getOrdersByUserId(String userId);
 
-    List<Order> getOrdersByShopId(String shopId);
+    Page<Order> findByShopId(String shopId, Pageable pageable);
 
     List<Order> getAllOrders();
 
@@ -20,5 +22,7 @@ public interface IOrderService {
     boolean updateOrderStatusCanceled(String orderId);
 
     boolean updateOrderStatusReady(String orderId);
+
+
 
 }

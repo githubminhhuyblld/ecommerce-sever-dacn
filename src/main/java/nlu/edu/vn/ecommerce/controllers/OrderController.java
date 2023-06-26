@@ -11,6 +11,9 @@ import nlu.edu.vn.ecommerce.models.Order;
 import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.services.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -108,10 +111,18 @@ public class OrderController {
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
     @PreAuthorize("#user.id == #userId")
-    public ResponseEntity<?> getOrdersByShopId(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable String shopId, @RequestParam String userId) {
-        List<Order> orders = iOrderService.getOrdersByShopId(shopId);
-        if (orders != null) {
-            return ResponseEntity.ok().body(new ResponseArray(orders.size(), "200", "Thành công", orders));
+    public ResponseEntity<?> getOrdersByShopId(
+            @ApiIgnore @AuthenticationPrincipal User user,
+            @PathVariable String shopId,
+            @RequestParam String userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> orders = iOrderService.findByShopId(shopId, pageable);
+
+        if (!orders.isEmpty()) {
+            return ResponseEntity.ok().body(new ResponseObject("ọke","thành công",orders));
         } else {
             throw new NotFoundException("Không tìm thấy order !!");
         }

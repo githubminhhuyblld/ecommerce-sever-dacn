@@ -8,6 +8,9 @@ import nlu.edu.vn.ecommerce.repositories.OrderRepository;
 import nlu.edu.vn.ecommerce.services.IOrderService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -81,13 +84,11 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public List<Order> getOrdersByShopId(String shopId) {
-        List<Order> orders = orderRepository.findByShopId(shopId);
-        if (orders.size() > 0) {
-            return orders;
-        }
-        return null;
+    public Page<Order> findByShopId(String shopId, Pageable pageable) {
+
+        return orderRepository.findByShopId(shopId, pageable);
     }
+
 
     @Override
     public List<Order> getAllOrders() {
