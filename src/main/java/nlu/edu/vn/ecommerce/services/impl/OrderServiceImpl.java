@@ -84,6 +84,17 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
+    public List<Order> getOrderByStatus(String userId, String status) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        List<Order> result = new ArrayList<>();
+        for (Order o : orders) {
+            if (o.getOrderStatus().toString().equalsIgnoreCase(status))
+                result.add(o);
+        }
+        return result;
+    }
+
+    @Override
     public Page<Order> findByShopId(String shopId, Pageable pageable) {
 
         return orderRepository.findByShopId(shopId, pageable);

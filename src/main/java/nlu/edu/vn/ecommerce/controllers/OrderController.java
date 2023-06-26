@@ -84,7 +84,7 @@ public class OrderController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
-    public ResponseEntity<?> updateOrderStatusCanceled(@ApiIgnore @AuthenticationPrincipal User user,@PathVariable String orderId,@RequestParam String userId) {
+    public ResponseEntity<?> updateOrderStatusCanceled(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable String orderId, @RequestParam String userId) {
         if (iOrderService.updateOrderStatusCanceled(orderId)) {
             return ResponseEntity.ok().body(new ResponseObject("oke", "update status canceled thành công!", null));
         } else {
@@ -92,18 +92,32 @@ public class OrderController {
 
         }
     }
+
     @PutMapping("/{orderId}/status/ready")
     @PreAuthorize("#user.id == #userId")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
-    public ResponseEntity<?> updateOrderStatusReady(@ApiIgnore @AuthenticationPrincipal User user,@PathVariable String orderId,@RequestParam String userId) {
+    public ResponseEntity<?> updateOrderStatusReady(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable String orderId, @RequestParam String userId) {
         if (iOrderService.updateOrderStatusReady(orderId)) {
             return ResponseEntity.ok().body(new ResponseObject("oke", "update status ready thành công!", null));
         } else {
             return ResponseEntity.badRequest().body(new ResponseObject("oke", "update status ready thất bại!", null));
 
         }
+    }
+
+    @GetMapping("/status")
+    @PreAuthorize("#user.id == #userId")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> getOrderByStatus(@ApiIgnore @AuthenticationPrincipal User user, @RequestParam String status, @RequestParam String userId) {
+        List<Order> orders = iOrderService.getOrderByStatus(userId, status);
+        if (orders == null) {
+            throw new NotFoundException("Không tìm thấy đơn hàng nào theo status" + status);
+        }
+        return ResponseEntity.ok().body(new ResponseObject("200", "Thành công", orders));
     }
 
     @GetMapping("/{shopId}/shop")
@@ -122,7 +136,7 @@ public class OrderController {
         Page<Order> orders = iOrderService.findByShopId(shopId, pageable);
 
         if (!orders.isEmpty()) {
-            return ResponseEntity.ok().body(new ResponseObject("ọke","thành công",orders));
+            return ResponseEntity.ok().body(new ResponseObject("ọke", "thành công", orders));
         } else {
             throw new NotFoundException("Không tìm thấy order !!");
         }
