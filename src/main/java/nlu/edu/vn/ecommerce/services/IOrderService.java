@@ -19,4 +19,6 @@ public interface IOrderService {
     boolean updateOrderStatusDelivered(String orderId);
     boolean updateOrderStatusCanceled(String orderId);
 
+    boolean updateOrderStatusReady(String orderId);
+
 }

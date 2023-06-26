@@ -125,4 +125,19 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
+
+    @Override
+    public boolean updateOrderStatusReady(String orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setOrderStatus(OrderStatus.READY);
+            order.setUpdateAt(new Timestamp().getTime());
+            orderRepository.save(order);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

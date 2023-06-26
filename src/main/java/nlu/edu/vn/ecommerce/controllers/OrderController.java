@@ -30,8 +30,8 @@ public class OrderController {
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
     @PreAuthorize("#user.id == #userId")
-    public ResponseEntity<?> order(@ApiIgnore @AuthenticationPrincipal User user,@RequestBody CartDTO cartDTO,@RequestParam String userId) {
-        if (iOrderService.order(cartDTO,userId)) {
+    public ResponseEntity<?> order(@ApiIgnore @AuthenticationPrincipal User user, @RequestBody CartDTO cartDTO, @RequestParam String userId) {
+        if (iOrderService.order(cartDTO, userId)) {
             return ResponseEntity.ok().body(new ResponseObject("oke", "Đặt đơn hàng thành công", null));
         } else {
             return ResponseEntity.badRequest().body(new ResponseObject("error", "Không có sản phẩm thanh toán", null));
@@ -47,11 +47,12 @@ public class OrderController {
     public ResponseEntity<?> getOrdersByUserId(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable("userId") String userId) {
         List<Order> orders = iOrderService.getOrdersByUserId(userId);
         if (orders == null) {
-            throw new NotFoundException("Không tìm thấy đơn hàng nào theo userId" +userId);
+            throw new NotFoundException("Không tìm thấy đơn hàng nào theo userId" + userId);
         }
         return ResponseEntity.ok().body(new ResponseObject("200", "Thành công", orders));
 
     }
+
     @GetMapping("")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
@@ -60,31 +61,44 @@ public class OrderController {
     public ResponseEntity<?> getAllOrders() {
         return ResponseEntity.ok().body(new ResponseObject("200", "Thành công", iOrderService.getAllOrders()));
     }
+
     @PutMapping("/{orderId}/status/delivered")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
     public ResponseEntity<?> updateOrderStatusDelivered(@PathVariable String orderId) {
-       if(iOrderService.updateOrderStatusDelivered(orderId)){
-           return ResponseEntity.ok().body(new ResponseObject("oke","update status delivered thành công!",null));
-       }
-       else{
-           return ResponseEntity.badRequest().body(new ResponseObject("oke","update status delivered thất bại!",null));
+        if (iOrderService.updateOrderStatusDelivered(orderId)) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "update status delivered thành công!", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ResponseObject("oke", "update status delivered thất bại!", null));
 
-       }
+        }
     }
+
     @PutMapping("/{orderId}/status/canceled")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("#user.id == #userId")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
-    public ResponseEntity<?> updateOrderStatusCanceled(@PathVariable String orderId) {
-        if(iOrderService.updateOrderStatusCanceled(orderId)){
-            return ResponseEntity.ok().body(new ResponseObject("oke","update status canceled thành công!",null));
+    public ResponseEntity<?> updateOrderStatusCanceled(@ApiIgnore @AuthenticationPrincipal User user,@PathVariable String orderId,@RequestParam String userId) {
+        if (iOrderService.updateOrderStatusCanceled(orderId)) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "update status canceled thành công!", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ResponseObject("oke", "update status canceled thất bại!", null));
+
         }
-        else{
-            return ResponseEntity.badRequest().body(new ResponseObject("oke","update status canceled thất bại!",null));
+    }
+    @PutMapping("/{orderId}/status/ready")
+    @PreAuthorize("#user.id == #userId")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> updateOrderStatusReady(@ApiIgnore @AuthenticationPrincipal User user,@PathVariable String orderId,@RequestParam String userId) {
+        if (iOrderService.updateOrderStatusReady(orderId)) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "update status ready thành công!", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ResponseObject("oke", "update status ready thất bại!", null));
 
         }
     }
@@ -93,13 +107,12 @@ public class OrderController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> getOrdersByShopId(@PathVariable String shopId) {
+    @PreAuthorize("#user.id == #userId")
+    public ResponseEntity<?> getOrdersByShopId(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable String shopId, @RequestParam String userId) {
         List<Order> orders = iOrderService.getOrdersByShopId(shopId);
-        if(orders != null){
+        if (orders != null) {
             return ResponseEntity.ok().body(new ResponseArray(orders.size(), "200", "Thành công", orders));
-        }
-        else{
+        } else {
             throw new NotFoundException("Không tìm thấy order !!");
         }
     }
