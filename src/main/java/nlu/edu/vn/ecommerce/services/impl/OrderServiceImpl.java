@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -141,4 +142,18 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
+
+    @Override
+    public Page<Order> getOrdersByShopIdAndStatus(String shopId, String orderStatus, Pageable pageable) {
+        OrderStatus status = OrderStatus.valueOf(orderStatus);
+        return orderRepository.findByShopIdAndOrderStatus(shopId, status, pageable);
+    }
+
+    @Override
+    public Page<Order> findByShopIdOrderByCreatedAtDesc(String shopId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createAt"));
+        return orderRepository.findByShopIdOrderByCreateAtDesc(shopId, pageable);
+    }
+
+
 }

@@ -269,6 +269,16 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findByShopId(shopId);
     }
 
+    @Override
+    public Page<Product> getAllProductsSortedByPriceDescending(Pageable pageable) {
+        return productRepository.findAllByOrderByNewPriceDesc(pageable);
+    }
+
+    @Override
+    public Page<Product> getAllProductsSortedByPriceAscending(Pageable pageable) {
+        return productRepository.findAllByOrderByNewPriceAsc(pageable);
+    }
+
     private static <T> List<T> mapList(List<T> list, Function<T, T> mapper) {
         if (list == null) {
             return null;

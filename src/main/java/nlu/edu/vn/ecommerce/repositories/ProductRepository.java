@@ -18,5 +18,8 @@ public interface ProductRepository extends PagingAndSortingRepository<Product,St
     List<Product> findByCategoryId(String categoryId, Pageable pageable);
     List<Product> findByShopId(String shopId);
     boolean existsByCategoryId(String categoryId);
+    Page<Product> findAllByOrderByNewPriceDesc(Pageable pageable);
+    Page<Product> findAllByOrderByNewPriceAsc(Pageable pageable);
+
 
 }

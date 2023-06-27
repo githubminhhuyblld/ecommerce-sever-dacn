@@ -23,7 +23,9 @@ public interface IProductService {
     Optional<Product> getProductById(String id);
     boolean updateProductById(String productId, ProductRequest productRequest,String userId);
     Page<Product> findProductBySearch(String search, Pageable pageable);
-
     List<Product> getAllProductByShopId(String shopId);
+    Page<Product> getAllProductsSortedByPriceDescending(Pageable pageable);
+    Page<Product> getAllProductsSortedByPriceAscending(Pageable pageable);
+
 
 }

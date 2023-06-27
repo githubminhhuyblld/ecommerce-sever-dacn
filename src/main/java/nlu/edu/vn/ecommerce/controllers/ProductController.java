@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -149,7 +150,24 @@ public class ProductController {
             throw new NotFoundException("Không tìm thấy sản phẩm");
         }
     }
+    @GetMapping("/sorted-by-price-descending")
+    public ResponseEntity<Page<Product>> getAllProductsSortedByPriceDescending(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "newPrice");
+        Page<Product> products = iProductService.getAllProductsSortedByPriceDescending(pageable);
+        return ResponseEntity.ok().body(products);
+    }
+    @GetMapping("/sorted-by-price-ascending")
+    public ResponseEntity<Page<Product>> getAllProductsSortedByPriceAscending(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "newPrice");
+        Page<Product> products = iProductService.getAllProductsSortedByPriceAscending(pageable);
+        return ResponseEntity.ok().body(products);
+    }
 
 
 }
