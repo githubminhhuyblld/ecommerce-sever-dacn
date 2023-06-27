@@ -17,5 +17,8 @@ public interface OrderRepository extends MongoRepository<Order,String> {
     Optional<Order> findById(String orderId);
     Page<Order> findByShopIdAndOrderStatus(String shopId, OrderStatus orderStatus, Pageable pageable);
 
+    Page<Order>findByShopIdOrderByCreateAtDesc(String shopId, Pageable pageable);
+
+
 
 }
