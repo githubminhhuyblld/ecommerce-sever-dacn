@@ -127,6 +127,24 @@ public class OrderController {
             throw new NotFoundException("Không tìm thấy order !!");
         }
     }
+    @GetMapping("/{shopId}/status")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    @PreAuthorize("#user.id == #userId")
+    public ResponseEntity<Page<Order>> getOrdersByShopIdAndStatus(
+            @ApiIgnore @AuthenticationPrincipal User user,
+            @PathVariable String shopId,
+            @RequestParam(defaultValue = "") String orderStatus,
+            @RequestParam String userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> orders = iOrderService.getOrdersByShopIdAndStatus(shopId, orderStatus, pageable);
+
+        return ResponseEntity.ok().body(orders);
+    }
 
 
 }

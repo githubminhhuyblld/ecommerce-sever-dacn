@@ -11,17 +11,14 @@ import java.util.List;
 
 public interface IOrderService {
     boolean order(CartDTO cartDTO,String userId);
-
     List<Order> getOrdersByUserId(String userId);
-
     Page<Order> findByShopId(String shopId, Pageable pageable);
-
     List<Order> getAllOrders();
-
     boolean updateOrderStatusDelivered(String orderId);
     boolean updateOrderStatusCanceled(String orderId);
-
     boolean updateOrderStatusReady(String orderId);
+
+    Page<Order> getOrdersByShopIdAndStatus(String shopId, String orderStatus, Pageable pageable);
 
 
 

@@ -141,4 +141,12 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
+
+    @Override
+    public Page<Order> getOrdersByShopIdAndStatus(String shopId, String orderStatus, Pageable pageable) {
+        OrderStatus status = OrderStatus.valueOf(orderStatus);
+        return orderRepository.findByShopIdAndOrderStatus(shopId, status, pageable);
+    }
+
+
 }
