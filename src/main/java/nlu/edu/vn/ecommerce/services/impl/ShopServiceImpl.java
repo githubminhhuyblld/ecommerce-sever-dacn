@@ -1,17 +1,15 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
+import nlu.edu.vn.ecommerce.dto.ShopDTO;
 import nlu.edu.vn.ecommerce.exception.*;
-import nlu.edu.vn.ecommerce.models.ActiveStatus;
-import nlu.edu.vn.ecommerce.models.Role;
-import nlu.edu.vn.ecommerce.models.Shop;
-import nlu.edu.vn.ecommerce.models.User;
-import nlu.edu.vn.ecommerce.repositories.RoleRepository;
-import nlu.edu.vn.ecommerce.repositories.ShopRepository;
-import nlu.edu.vn.ecommerce.repositories.UserRepository;
+import nlu.edu.vn.ecommerce.models.*;
+import nlu.edu.vn.ecommerce.repositories.*;
 import nlu.edu.vn.ecommerce.request.ShopRequest;
 import nlu.edu.vn.ecommerce.services.IShopService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +24,14 @@ public class ShopServiceImpl implements IShopService {
     private ShopRepository shopRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Override
     public Shop getShopById(String id) {
@@ -34,7 +40,7 @@ public class ShopServiceImpl implements IShopService {
     }
 
     @Override
-    public Shop registerShop(String userId, ShopRequest shopRequest)  {
+    public Shop registerShop(String userId, ShopRequest shopRequest) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException("Không tìm thấy user");
@@ -76,4 +82,34 @@ public class ShopServiceImpl implements IShopService {
         return shopRepository.existsByName(name);
     }
 
+    @Override
+    public Shop updateShopById(String id, ShopRequest shopRequest, String userId) {
+        Shop existingShop = shopRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Shop not found with id: " + id));
+
+        BeanUtils.copyProperties(shopRequest, existingShop, "id");
+        List<Product> products = productRepository.findByShopId(id);
+        for (Product product : products) {
+            product.setShop(existingShop);
+            mongoTemplate.save(product);
+        }
+        List<Order> ordersUsers = orderRepository.findByUserId(userId);
+        for (Order order : ordersUsers) {
+            for (CartItem cartItem : order.getCartItems()) {
+                if (cartItem.getShop().getId().equals(existingShop.getId())) {
+                    ShopDTO updatedShop = new ShopDTO();
+                    updatedShop.setId(existingShop.getId());
+                    updatedShop.setName(existingShop.getName());
+                    updatedShop.setImage(existingShop.getImage());
+                    updatedShop.setAddress(existingShop.getAddress());
+                    updatedShop.setDescription(existingShop.getDescription());
+                    cartItem.setShop(updatedShop);
+                }
+            }
+            mongoTemplate.save(order);
+        }
+        return shopRepository.save(existingShop);
+    }
+
+    
 }

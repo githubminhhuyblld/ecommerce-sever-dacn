@@ -279,6 +279,9 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findAllByOrderByNewPriceAsc(pageable);
     }
 
+    public void updateProduct(Product product) {
+        productRepository.save(product);
+    }
     private static <T> List<T> mapList(List<T> list, Function<T, T> mapper) {
         if (list == null) {
             return null;

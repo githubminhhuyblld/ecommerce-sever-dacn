@@ -27,5 +27,7 @@ public interface IProductService {
     Page<Product> getAllProductsSortedByPriceDescending(Pageable pageable);
     Page<Product> getAllProductsSortedByPriceAscending(Pageable pageable);
 
+    void updateProduct(Product product);
+
 
 }

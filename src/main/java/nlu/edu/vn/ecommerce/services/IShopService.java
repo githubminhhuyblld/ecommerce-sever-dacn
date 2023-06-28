@@ -10,4 +10,8 @@ public interface IShopService {
     Shop registerShop(String userId, ShopRequest shopRequest);
 
     boolean checkExitsName(String name);
+
+    Shop updateShopById(String id,ShopRequest shopRequest,String userId);
+
+
 }

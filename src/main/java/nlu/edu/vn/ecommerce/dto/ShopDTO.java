@@ -24,4 +24,13 @@ public class ShopDTO {
         shopDTO.setImage(shop.getImage());
         return shopDTO;
     }
+    public ShopDTO toShopDTO() {
+        ShopDTO shopDTO = new ShopDTO();
+        shopDTO.setId(this.id);
+        shopDTO.setName(this.name);
+        shopDTO.setImage(this.image);
+        shopDTO.setAddress(this.address);
+        shopDTO.setDescription(this.description);
+        return shopDTO;
+    }
 }

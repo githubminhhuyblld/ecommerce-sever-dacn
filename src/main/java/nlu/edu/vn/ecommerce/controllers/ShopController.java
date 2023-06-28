@@ -30,6 +30,16 @@ public class ShopController {
         return ResponseEntity.ok().body(new ResponseObject("oke", "đăng ký thành công !", shop));
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("#user.id == #userId")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> updateShopById(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable String id, @RequestBody ShopRequest shopRequest, @RequestParam("userId") String userId) {
+        Shop updatedShop = iShopService.updateShopById(id, shopRequest,userId);
+        return ResponseEntity.ok().body(updatedShop);
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("#user.id == #userId")
     @ApiImplicitParams({
@@ -38,10 +48,11 @@ public class ShopController {
     public ResponseEntity<?> getShopById(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable("id") String id, @RequestParam("userId") String userId) {
         Shop shop = iShopService.getShopById(id);
         if (shop == null) {
-           throw new NotFoundException("Không tìm thấy shop!");
+            throw new NotFoundException("Không tìm thấy shop!");
         }
-        return ResponseEntity.ok().body(new ResponseObject("oke","thành công",shop));
+        return ResponseEntity.ok().body(new ResponseObject("oke", "thành công", shop));
     }
+
     @GetMapping("/check-name")
     public ResponseEntity<Boolean> checkEmailExists(@RequestParam("name") String name) {
         boolean exists = iShopService.checkExitsName(name);
