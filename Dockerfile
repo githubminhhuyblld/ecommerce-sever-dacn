@@ -9,7 +9,7 @@ RUN mvn clean package -DskipTests
 # Package stage
 #
 FROM openjdk:11-jdk-slim
-COPY --from=build /target/*.jar demo.jar
+COPY --from=build /target/*.war demo.war
 
 
 # ENV PORT=8080
