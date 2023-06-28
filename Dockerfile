@@ -14,4 +14,4 @@ COPY --from=build /target/*.war demo.war
 
 # ENV PORT=8080
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","demo.jar"]
+ENTRYPOINT ["java","-jar","demo.war"]
