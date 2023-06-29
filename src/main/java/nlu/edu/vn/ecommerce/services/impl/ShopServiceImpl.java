@@ -111,5 +111,5 @@ public class ShopServiceImpl implements IShopService {
         return shopRepository.save(existingShop);
     }
 
-    
+
 }

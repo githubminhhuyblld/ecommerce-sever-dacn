@@ -147,6 +147,7 @@ public class OrderController {
 
         return ResponseEntity.ok().body(orders);
     }
+
     @GetMapping("/{shopId}/latest-orders")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
@@ -160,6 +161,16 @@ public class OrderController {
             @RequestParam(defaultValue = "10") int size) {
         Page<Order> orders = iOrderService.findByShopIdOrderByCreatedAtDesc(shopId, page, size);
         return ResponseEntity.ok().body(orders);
+    }
+
+    @DeleteMapping("/{orderId}")
+    @PreAuthorize("#user.id == #userId")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> deleteOrderById(@ApiIgnore @AuthenticationPrincipal User user, @RequestParam String userId, @PathVariable("orderId") String id) {
+        boolean deleted = iOrderService.deleteOrderById(id);
+        return ResponseEntity.ok().body(deleted);
     }
 
 

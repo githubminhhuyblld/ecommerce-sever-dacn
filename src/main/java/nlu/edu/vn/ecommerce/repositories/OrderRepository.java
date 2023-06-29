@@ -13,6 +13,8 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends MongoRepository<Order,String> {
     List<Order> findByUserId(String userId);
+    List<Order> findByUserIdOrderByCreateAtDesc(String userId);
+
     Page<Order> findByShopId(String shopId, Pageable pageable);
     Optional<Order> findById(String orderId);
     Page<Order> findByShopIdAndOrderStatus(String shopId, OrderStatus orderStatus, Pageable pageable);

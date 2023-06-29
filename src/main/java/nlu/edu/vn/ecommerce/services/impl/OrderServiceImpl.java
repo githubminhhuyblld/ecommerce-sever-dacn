@@ -81,7 +81,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public List<Order> getOrdersByUserId(String userId) {
-        return orderRepository.findByUserId(userId);
+        return orderRepository.findByUserIdOrderByCreateAtDesc(userId);
     }
 
     @Override
@@ -155,5 +155,12 @@ public class OrderServiceImpl implements IOrderService {
         return orderRepository.findByShopIdOrderByCreateAtDesc(shopId, pageable);
     }
 
+    public boolean deleteOrderById(String id) {
+        if (orderRepository.existsById(id)) {
+            orderRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 
 }
