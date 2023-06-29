@@ -93,7 +93,7 @@ public class ShopServiceImpl implements IShopService {
             product.setShop(existingShop);
             mongoTemplate.save(product);
         }
-        List<Order> ordersUsers = orderRepository.findByUserId(userId);
+        List<Order> ordersUsers = orderRepository.findAll();
         for (Order order : ordersUsers) {
             for (CartItem cartItem : order.getCartItems()) {
                 if (cartItem.getShop().getId().equals(existingShop.getId())) {
