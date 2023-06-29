@@ -10,6 +10,7 @@ import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.repositories.UserRepository;
 
 import nlu.edu.vn.ecommerce.request.AddressRequest;
+import nlu.edu.vn.ecommerce.request.UpdateUserRequest;
 import nlu.edu.vn.ecommerce.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -67,13 +68,15 @@ public class UserController {
     @PostMapping("/{userId}/addresses")
     public ResponseEntity<?> addAddress(@PathVariable("userId") String userId, @RequestBody AddressRequest address) {
         iUserService.addAddressByUserId(userId, address);
-        return ResponseEntity.ok().body(new ResponseObject("oke","Thành công",null));
+        return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", null));
     }
+
     @PutMapping("/{userId}/addresses")
-    public ResponseEntity<?> updateAddressById(@RequestParam String id,@PathVariable("userId") String userId, @RequestBody AddressRequest address) {
-        iUserService.updateAddressById(userId,id, address);
-        return ResponseEntity.ok().body(new ResponseObject("oke","Update Thành công",null));
+    public ResponseEntity<?> updateAddressById(@RequestParam String id, @PathVariable("userId") String userId, @RequestBody AddressRequest address) {
+        iUserService.updateAddressById(userId, id, address);
+        return ResponseEntity.ok().body(new ResponseObject("oke", "Update Thành công", null));
     }
+
     @GetMapping("/addresses/{addressId}")
     public ResponseEntity<?> getAddressById(@PathVariable("addressId") String addressId) {
         Address address = iUserService.getAddressById(addressId);
@@ -82,6 +85,16 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PutMapping("/{userId}")
+    @PreAuthorize("#user.id == #userId")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> updateUser(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable("userId") String userId, @RequestBody UpdateUserRequest updateUserRequest) {
+        User updatedUser = iUserService.updateUser(userId, updateUserRequest);
+        return ResponseEntity.ok().body(new ResponseObject("oke","update thành công",updatedUser));
     }
 
 }

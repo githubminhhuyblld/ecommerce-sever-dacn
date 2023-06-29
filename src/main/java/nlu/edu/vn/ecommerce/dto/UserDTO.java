@@ -30,7 +30,7 @@ public class UserDTO {
 
     private String numberPhone;
 
-    private String dateOfBirth;
+    private long dateOfBirth;
 
     private GenderType gender;
 

@@ -43,7 +43,7 @@ public class User extends BaseEntity implements UserDetails {
 
     private String numberPhone;
 
-    private String dateOfBirth;
+    private long dateOfBirth;
 
     private GenderType gender;
 
@@ -80,7 +80,7 @@ public class User extends BaseEntity implements UserDetails {
         this.numberPhone = numberPhone;
     }
 
-    public User(@NonNull String username, @NonNull String email, @NonNull String password, @NonNull String firstName, @NonNull String lastName, @NonNull String numberPhone, @NonNull String image, GenderType gender, String birthday) {
+    public User(@NonNull String username, @NonNull String email, @NonNull String password, @NonNull String firstName, @NonNull String lastName, @NonNull String numberPhone, @NonNull String image, GenderType gender, long birthday) {
         this.username = username;
         this.email = email;
         this.password = password;

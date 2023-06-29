@@ -6,7 +6,9 @@ import nlu.edu.vn.ecommerce.models.AddressType;
 import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.repositories.UserRepository;
 import nlu.edu.vn.ecommerce.request.AddressRequest;
+import nlu.edu.vn.ecommerce.request.UpdateUserRequest;
 import nlu.edu.vn.ecommerce.services.IUserService;
+import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -85,6 +87,22 @@ public class UserServiceImpl implements IUserService {
             }
         }
         return null;
+    }
+
+    @Override
+    public User updateUser(String userId, UpdateUserRequest updateUserRequest) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        existingUser.setImage(updateUserRequest.getImage());
+        existingUser.setFirstName(updateUserRequest.getFirstName());
+        existingUser.setLastName(updateUserRequest.getLastName());
+        existingUser.setNumberPhone(updateUserRequest.getNumberPhone());
+        existingUser.setDateOfBirth(updateUserRequest.getDateOfBirth());
+        existingUser.setGender(updateUserRequest.getGender());
+        existingUser.setUpdateAt(new Timestamp().getTime());
+
+        return userRepository.save(existingUser);
     }
 
 }
