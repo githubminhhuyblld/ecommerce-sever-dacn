@@ -10,6 +10,7 @@ import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.repositories.UserRepository;
 
 import nlu.edu.vn.ecommerce.request.AddressRequest;
+import nlu.edu.vn.ecommerce.request.UpdatePasswordRequest;
 import nlu.edu.vn.ecommerce.request.UpdateUserRequest;
 import nlu.edu.vn.ecommerce.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,21 @@ public class UserController {
     public ResponseEntity<?> updateUser(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable("userId") String userId, @RequestBody UpdateUserRequest updateUserRequest) {
         User updatedUser = iUserService.updateUser(userId, updateUserRequest);
         return ResponseEntity.ok().body(new ResponseObject("oke","update thành công",updatedUser));
+    }
+    @PostMapping("/update/password/{userId}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    @PreAuthorize("#user.id == #userId")
+    public ResponseEntity<?> updatePassword(@ApiIgnore @AuthenticationPrincipal User user,
+                                            @PathVariable("userId") String userId,
+                                            @RequestBody UpdatePasswordRequest request) {
+        boolean updated = iUserService.updatePassword(userId, request.getOldPassword(), request.getNewPassword());
+        if (updated) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ResponseObject("failed", "Đổi mật khẩu không thành công", null));
+        }
     }
 
 }

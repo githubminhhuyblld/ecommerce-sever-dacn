@@ -15,6 +15,7 @@ public interface IUserService {
 
     void updateAddressById(String userId, String addressId, AddressRequest addressRequest);
     Address getAddressById(String addressId);
-
     User updateUser(String userId, UpdateUserRequest updateUserRequest);
+
+    boolean updatePassword(String userId,String oldPassword,String newPassword);
 }

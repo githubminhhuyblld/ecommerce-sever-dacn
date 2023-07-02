@@ -10,6 +10,7 @@ import nlu.edu.vn.ecommerce.request.UpdateUserRequest;
 import nlu.edu.vn.ecommerce.services.IUserService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,6 +22,10 @@ import java.util.UUID;
 public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
+
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public boolean checkUsernameExits(String username) {
@@ -103,6 +108,20 @@ public class UserServiceImpl implements IUserService {
         existingUser.setUpdateAt(new Timestamp().getTime());
 
         return userRepository.save(existingUser);
+    }
+
+    @Override
+    public boolean updatePassword(String userId, String oldPassword, String newPassword) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new NotFoundException("Không tìm thấy user");
+        }
+        if (!passwordEncoder.matches(oldPassword, user.get().getPassword())) {
+            return false;
+        }
+        user.get().setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user.get());
+        return true;
     }
 
 }
