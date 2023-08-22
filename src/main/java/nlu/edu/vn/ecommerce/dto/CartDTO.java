@@ -2,6 +2,7 @@ package nlu.edu.vn.ecommerce.dto;
 
 import lombok.Data;
 import nlu.edu.vn.ecommerce.models.CartItem;
+import nlu.edu.vn.ecommerce.models.enums.PaymentType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +23,8 @@ public class CartDTO {
     private BigDecimal totalPrice;
 
     private String address;
+
+    private PaymentType paymentType;
 
 }
 

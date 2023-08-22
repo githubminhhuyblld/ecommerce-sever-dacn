@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
 import nlu.edu.vn.ecommerce.models.*;
+import nlu.edu.vn.ecommerce.models.enums.GenderType;
+import nlu.edu.vn.ecommerce.models.enums.ServiceType;
 
 import java.util.List;
 

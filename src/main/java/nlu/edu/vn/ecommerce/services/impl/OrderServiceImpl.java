@@ -1,8 +1,9 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.dto.CartDTO;
-import nlu.edu.vn.ecommerce.dto.ShopDTO;
 import nlu.edu.vn.ecommerce.models.*;
+import nlu.edu.vn.ecommerce.models.enums.OrderStatus;
+import nlu.edu.vn.ecommerce.models.enums.OrderType;
 import nlu.edu.vn.ecommerce.repositories.CartRepository;
 import nlu.edu.vn.ecommerce.repositories.OrderRepository;
 import nlu.edu.vn.ecommerce.services.IOrderService;
@@ -58,7 +59,7 @@ public class OrderServiceImpl implements IOrderService {
                 order.setShopId(shopId);
                 order.setOrderType(OrderType.SELL);
                 order.setOrderStatus(OrderStatus.PROCESSING);
-                order.setPaymentType(PaymentType.PAYMENT_ON_DELIVERY);
+                order.setPaymentType(cartDTO.getPaymentType());
 
                 orders.add(order);
             }
@@ -161,6 +162,11 @@ public class OrderServiceImpl implements IOrderService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Optional<Order> findById(String id) {
+        return orderRepository.findById(id);
     }
 
 }

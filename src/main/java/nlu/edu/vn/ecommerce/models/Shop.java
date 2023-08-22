@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nlu.edu.vn.ecommerce.base.BaseEntity;
+import nlu.edu.vn.ecommerce.models.enums.ActiveStatus;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @EqualsAndHashCode(callSuper = true)

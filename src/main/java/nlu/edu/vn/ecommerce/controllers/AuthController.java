@@ -6,7 +6,7 @@ import nlu.edu.vn.ecommerce.exception.ResponseObject;
 import nlu.edu.vn.ecommerce.jwt.JwtHelper;
 import nlu.edu.vn.ecommerce.models.RefreshToken;
 import nlu.edu.vn.ecommerce.models.Role;
-import nlu.edu.vn.ecommerce.models.ServiceType;
+import nlu.edu.vn.ecommerce.models.enums.ServiceType;
 import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.repositories.RefreshTokenRepository;
 import nlu.edu.vn.ecommerce.repositories.RoleRepository;
@@ -24,7 +24,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +31,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")

@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import nlu.edu.vn.ecommerce.dto.TokenDTO;
 import nlu.edu.vn.ecommerce.jwt.JwtHelper;
 import nlu.edu.vn.ecommerce.models.*;
+import nlu.edu.vn.ecommerce.models.enums.ServiceType;
 import nlu.edu.vn.ecommerce.repositories.RefreshTokenRepository;
 import nlu.edu.vn.ecommerce.repositories.RoleRepository;
 import nlu.edu.vn.ecommerce.repositories.UserRepository;

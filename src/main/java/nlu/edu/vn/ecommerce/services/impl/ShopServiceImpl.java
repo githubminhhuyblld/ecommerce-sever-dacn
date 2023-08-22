@@ -3,6 +3,7 @@ package nlu.edu.vn.ecommerce.services.impl;
 import nlu.edu.vn.ecommerce.dto.ShopDTO;
 import nlu.edu.vn.ecommerce.exception.*;
 import nlu.edu.vn.ecommerce.models.*;
+import nlu.edu.vn.ecommerce.models.enums.ActiveStatus;
 import nlu.edu.vn.ecommerce.repositories.*;
 import nlu.edu.vn.ecommerce.request.ShopRequest;
 import nlu.edu.vn.ecommerce.services.IShopService;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

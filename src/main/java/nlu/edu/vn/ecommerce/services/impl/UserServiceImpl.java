@@ -2,7 +2,7 @@ package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.models.Address;
-import nlu.edu.vn.ecommerce.models.AddressType;
+import nlu.edu.vn.ecommerce.models.enums.AddressType;
 import nlu.edu.vn.ecommerce.models.User;
 import nlu.edu.vn.ecommerce.repositories.UserRepository;
 import nlu.edu.vn.ecommerce.request.AddressRequest;

@@ -3,7 +3,7 @@ package nlu.edu.vn.ecommerce.request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import nlu.edu.vn.ecommerce.models.GenderType;
+import nlu.edu.vn.ecommerce.models.enums.GenderType;
 
 @Getter
 @Setter

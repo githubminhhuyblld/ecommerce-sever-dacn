@@ -3,6 +3,7 @@ package nlu.edu.vn.ecommerce.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nlu.edu.vn.ecommerce.models.enums.AddressType;
 import org.springframework.data.annotation.Id;
 
 @Data
