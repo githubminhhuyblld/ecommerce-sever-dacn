@@ -1,11 +1,15 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.config.VNPayConfig;
+import nlu.edu.vn.ecommerce.dto.TransactionStatus;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.models.Order;
+import nlu.edu.vn.ecommerce.models.enums.PaymentStatus;
 import nlu.edu.vn.ecommerce.repositories.OrderRepository;
+import nlu.edu.vn.ecommerce.services.IOrderService;
 import nlu.edu.vn.ecommerce.services.IPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,41 +23,12 @@ import java.util.*;
 public class VNPayServiceImpl implements IPaymentService {
     @Autowired
     private OrderRepository orderRepository;
-    public int orderReturn(HttpServletRequest request){
-        Map fields = new HashMap();
-        for (Enumeration params = request.getParameterNames(); params.hasMoreElements();) {
-            String fieldName = null;
-            String fieldValue = null;
-            try {
-                fieldName = URLEncoder.encode((String) params.nextElement(), StandardCharsets.US_ASCII.toString());
-                fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII.toString());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                fields.put(fieldName, fieldValue);
-            }
-        }
 
-        String vnp_SecureHash = request.getParameter("vnp_SecureHash");
-        if (fields.containsKey("vnp_SecureHashType")) {
-            fields.remove("vnp_SecureHashType");
-        }
-        if (fields.containsKey("vnp_SecureHash")) {
-            fields.remove("vnp_SecureHash");
-        }
-        String signValue = VNPayConfig.hashAllFields(fields);
-        if (signValue.equals(vnp_SecureHash)) {
-            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                return 1;
-            } else {
-                return 0;
-            }
-        } else {
-            return -1;
-        }
-    }
+    @Autowired
+    private IOrderService iOrderService;
 
+    @Autowired
+    private MongoTemplate  mongoTemplate;
     @Override
     public String createOrder(int total, String orderInfor, String urlReturn) {
         Optional<Order> order = orderRepository.findById(orderInfor);
@@ -128,5 +103,34 @@ public class VNPayServiceImpl implements IPaymentService {
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
         return paymentUrl;
+    }
+
+    @Override
+    public TransactionStatus processPayment(String amount, String bankCode, String orderInfo, String responseCode) {
+        TransactionStatus transactionStatus = new TransactionStatus();
+        Optional<Order> order = iOrderService.findById(orderInfo);
+
+        if (responseCode.equals("00")) {
+            order.ifPresentOrElse(
+                    ord -> {
+                        ord.setPaymentStatus(PaymentStatus.PAID);
+                        mongoTemplate.save(ord);
+                        transactionStatus.setStatus("oke");
+                        transactionStatus.setMessage("successfully");
+                    },
+                    () -> {
+                        throw new NotFoundException("Không tìm thấy order" + orderInfo);
+                    }
+            );
+        } else {
+            order.ifPresent(ord -> {
+                ord.setPaymentStatus(PaymentStatus.FAILED);
+                mongoTemplate.save(ord);
+                transactionStatus.setStatus("failed");
+                transactionStatus.setMessage("failed");
+            });
+        }
+
+        return transactionStatus;
     }
 }
