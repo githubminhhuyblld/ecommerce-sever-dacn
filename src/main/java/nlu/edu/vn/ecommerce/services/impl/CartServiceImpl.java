@@ -28,87 +28,58 @@ public class CartServiceImpl implements ICartService {
     private ProductRepository productRepository;
     @Override
     public void addToCart(String userId, CartItem cartItem) {
-        Cart cart = cartRepository.findByUserId(userId);
-        if (cart == null) {
-            cart = new Cart();
-            cart.setUserId(userId);
-            cart.setCartItems(new ArrayList<>());
-        }
-        List<CartItem> cartItems = cart.getCartItems();
-        boolean found = false;
-        for (CartItem item : cartItems) {
-            if (item.getProductId().equals(cartItem.getProductId())) {
-                item.setAmount(item.getAmount() + cartItem.getAmount());
-                String productId = item.getProductId();
-                Optional<Product> productOptional = productRepository.findById(productId);
-                Product product = productOptional.get();
-                Shop shop = product.getShop();
-                item.setShop(new ShopDTO().fromShopDTO(shop));
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            cartItems.add(cartItem);
-        }
-        BigDecimal totalPrice = cartItems.stream()
-                .map(item -> item.getNewPrice().multiply(BigDecimal.valueOf(item.getAmount())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        cart.setTotalPrice(totalPrice);
+        Cart existingCart = cartRepository.findByUserIdAndCartItemProductId(userId, cartItem.getProductId());
 
-        cart.setCartItems(cartItems);
-        cartRepository.save(cart);
+        if (existingCart != null) {
+            existingCart.getCartItem().setAmount(existingCart.getCartItem().getAmount() + cartItem.getAmount());
+            cartItem = existingCart.getCartItem();
+        } else {
+
+            existingCart = new Cart();
+            existingCart.setUserId(userId);
+        }
+
+        Optional<Product> productOptional = productRepository.findById(cartItem.getProductId());
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            Shop shop = product.getShop();
+            cartItem.setShop(new ShopDTO().fromShopDTO(shop));
+        }
+
+        BigDecimal totalPrice = cartItem.getNewPrice().multiply(BigDecimal.valueOf(cartItem.getAmount()));
+        existingCart.setTotalPrice(totalPrice);
+
+        existingCart.setCartItem(cartItem);
+
+        cartRepository.save(existingCart);
     }
+
 
     @Override
     public boolean removeItemFromCart(String userId, String productId) {
-        Cart cart = cartRepository.findByUserId(userId);
+        Cart cart = cartRepository.findByUserIdAndCartItemProductId(userId, productId);
         if (cart != null) {
-            List<CartItem> items = cart.getCartItems();
-            Iterator<CartItem> iterator = items.iterator();
-            while (iterator.hasNext()) {
-                CartItem item = iterator.next();
-                if (item.getProductId().equals(productId)) {
-                    iterator.remove();
-                    cart.setCartItems(items);
-
-                    BigDecimal total = BigDecimal.ZERO;
-                    for (CartItem i : items) {
-                        BigDecimal itemTotal = i.getNewPrice().multiply(BigDecimal.valueOf(i.getAmount()));
-                        total = total.add(itemTotal);
-                    }
-                    cart.setTotalPrice(total);
-                    cart.setCartItems(items);
-
-                    cartRepository.save(cart);
-                    return true;
-                }
-            }
+            cartRepository.deleteById(cart.getId());
+            return true;
         }
         return false;
     }
 
+
     @Override
     public CartItem updateCartItemQuantityByProductIdAndUserId(String productId, String userId, int amount) {
-        Cart cart = cartRepository.findByUserId(userId);
-        List<CartItem> cartItems = cart.getCartItems();
-        BigDecimal total = BigDecimal.ZERO;
-        for (CartItem item : cartItems) {
-            if (item.getProductId().equals(productId)) {
-                item.setAmount(amount);
-            }
+        Cart cart = cartRepository.findByUserIdAndCartItemProductId(userId, productId);
+        if (cart != null) {
+            CartItem item = cart.getCartItem();
+            item.setAmount(amount);
             BigDecimal itemTotal = item.getNewPrice().multiply(BigDecimal.valueOf(item.getAmount()));
-            total = total.add(itemTotal);
-        }
-        cart.setTotalPrice(total);
-        cartRepository.save(cart);
-        for (CartItem item : cartItems) {
-            if (item.getProductId().equals(productId)) {
-                return item;
-            }
+            cart.setTotalPrice(itemTotal);
+            cartRepository.save(cart);
+            return item;
         }
         return null;
     }
+
 
     @Override
     public List<Cart> getCartByUserId(String userId) {

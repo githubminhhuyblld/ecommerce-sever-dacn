@@ -4,6 +4,7 @@ import nlu.edu.vn.ecommerce.dto.CartDTO;
 import nlu.edu.vn.ecommerce.models.*;
 import nlu.edu.vn.ecommerce.models.enums.OrderStatus;
 import nlu.edu.vn.ecommerce.models.enums.OrderType;
+import nlu.edu.vn.ecommerce.models.enums.PaymentStatus;
 import nlu.edu.vn.ecommerce.repositories.CartRepository;
 import nlu.edu.vn.ecommerce.repositories.OrderRepository;
 import nlu.edu.vn.ecommerce.services.IOrderService;
@@ -26,50 +27,45 @@ public class OrderServiceImpl implements IOrderService {
     private CartRepository cartRepository;
 
     @Override
-    public boolean order(CartDTO cartDTO, String userId) {
-        Cart cart = cartRepository.findByUserId(userId);
-        if (cart != null) {
-            List<Order> orders = new ArrayList<>();
-            Map<String, List<CartItem>> shopCartItemsMap = new HashMap<>();
-
+    public String order(CartDTO cartDTO, String userId) {
+        List<Cart> cartList = cartRepository.getCartByUserId(userId);
+        if (cartList != null && !cartList.isEmpty()) {
+            Order order = new Order();
+            order.setUserId(userId);
+            BigDecimal totalOrderPrice = BigDecimal.ZERO;
 
             for (CartItem cartItem : cartDTO.getCartItems()) {
-                String shopId = cartItem.getShop().getId();
-                List<CartItem> shopCartItems = shopCartItemsMap.getOrDefault(shopId, new ArrayList<>());
-                shopCartItems.add(cartItem);
-                shopCartItemsMap.put(shopId, shopCartItems);
+                BigDecimal itemTotalPrice = cartItem.getNewPrice().multiply(new BigDecimal(cartItem.getAmount()));
+                totalOrderPrice = totalOrderPrice.add(itemTotalPrice);
             }
 
+            order.setTotalPrice(totalOrderPrice);
+            order.setCartItems(cartDTO.getCartItems());
+            order.setAddress(cartDTO.getAddress());
+            order.setEmail(cartDTO.getEmail());
+            order.setNumberPhone(cartDTO.getNumberPhone());
+            order.setName(cartDTO.getName());
+            order.setCreateAt(new Timestamp().getTime());
+            order.setShopId(cartDTO.getCartItems().get(0).getShop().getId());
+            order.setOrderType(OrderType.SELL);
+            order.setOrderStatus(OrderStatus.PROCESSING);
+            order.setPaymentType(cartDTO.getPaymentType());
+            order.setPaymentStatus(PaymentStatus.PENDING);
 
-            for (Map.Entry<String, List<CartItem>> entry : shopCartItemsMap.entrySet()) {
-                String shopId = entry.getKey();
-                List<CartItem> shopCartItems = entry.getValue();
+            Order savedOrder = orderRepository.save(order);
 
-                Order order = new Order();
-                order.setUserId(userId);
-                order.setCartItems(shopCartItems);
-
-                BigDecimal totalPrice = calculateTotalPrice(shopCartItems);
-                order.setTotalPrice(totalPrice);
-                order.setAddress(cartDTO.getAddress());
-                order.setEmail(cartDTO.getEmail());
-                order.setNumberPhone(cartDTO.getNumberPhone());
-                order.setName(cartDTO.getName());
-                order.setCreateAt(new Timestamp().getTime());
-                order.setShopId(shopId);
-                order.setOrderType(OrderType.SELL);
-                order.setOrderStatus(OrderStatus.PROCESSING);
-                order.setPaymentType(cartDTO.getPaymentType());
-
-                orders.add(order);
+            // Delete only the cart items that were ordered
+            for (CartItem orderedItem : cartDTO.getCartItems()) {
+                cartRepository.deleteByUserIdAndCartItemProductId(userId, orderedItem.getProductId());
             }
 
-            orderRepository.saveAll(orders);
-            cartRepository.deleteByUserId(cartDTO.getUserId());
-            return true;
+            return savedOrder.getId();
         }
-        return false;
+        return null;
     }
+
+
+
 
     private BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
         BigDecimal totalPrice = BigDecimal.ZERO;

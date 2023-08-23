@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IOrderService {
-    boolean order(CartDTO cartDTO,String userId);
+    String order(CartDTO cartDTO,String userId);
     List<Order> getOrdersByUserId(String userId);
     Page<Order> findByShopId(String shopId, Pageable pageable);
     List<Order> getAllOrders();

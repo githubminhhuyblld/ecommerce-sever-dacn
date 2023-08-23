@@ -34,8 +34,9 @@ public class OrderController {
     })
     @PreAuthorize("#user.id == #userId")
     public ResponseEntity<?> order(@ApiIgnore @AuthenticationPrincipal User user, @RequestBody CartDTO cartDTO, @RequestParam String userId) {
-        if (iOrderService.order(cartDTO, userId)) {
-            return ResponseEntity.ok().body(new ResponseObject("oke", "Đặt đơn hàng thành công", null));
+        String orderId = iOrderService.order(cartDTO, userId);
+        if (orderId != null) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "Đặt đơn hàng thành công", orderId));
         } else {
             return ResponseEntity.badRequest().body(new ResponseObject("error", "Không có sản phẩm thanh toán", null));
 
