@@ -4,6 +4,7 @@ import nlu.edu.vn.ecommerce.config.VNPayConfig;
 import nlu.edu.vn.ecommerce.dto.TransactionStatus;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.models.Order;
+import nlu.edu.vn.ecommerce.models.enums.OrderStatus;
 import nlu.edu.vn.ecommerce.models.enums.PaymentStatus;
 import nlu.edu.vn.ecommerce.repositories.OrderRepository;
 import nlu.edu.vn.ecommerce.services.IOrderService;
@@ -28,12 +29,13 @@ public class VNPayServiceImpl implements IPaymentService {
     private IOrderService iOrderService;
 
     @Autowired
-    private MongoTemplate  mongoTemplate;
+    private MongoTemplate mongoTemplate;
+
     @Override
     public String createOrder(int total, String orderInfor, String urlReturn) {
         Optional<Order> order = orderRepository.findById(orderInfor);
-        if(order.isEmpty()){
-            throw new NotFoundException("Không tìm thấy order" +orderInfor);
+        if (order.isEmpty()) {
+            throw new NotFoundException("Không tìm thấy order" + orderInfor);
         }
 
         String vnp_Version = "2.1.0";
@@ -47,7 +49,7 @@ public class VNPayServiceImpl implements IPaymentService {
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(total*100));
+        vnp_Params.put("vnp_Amount", String.valueOf(total * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_BankCode", "NCB");
 
@@ -106,31 +108,25 @@ public class VNPayServiceImpl implements IPaymentService {
     }
 
     @Override
-    public TransactionStatus processPayment(String amount, String bankCode, String orderInfo, String responseCode) {
-        TransactionStatus transactionStatus = new TransactionStatus();
-        Optional<Order> order = iOrderService.findById(orderInfo);
+    public boolean processPayment(String amount, String bankCode, String orderInfo, String responseCode) {
+        Optional<Order> orderOpt = iOrderService.findById(orderInfo);
 
-        if (responseCode.equals("00")) {
-            order.ifPresentOrElse(
-                    ord -> {
-                        ord.setPaymentStatus(PaymentStatus.PAID);
-                        mongoTemplate.save(ord);
-                        transactionStatus.setStatus("oke");
-                        transactionStatus.setMessage("successfully");
-                    },
-                    () -> {
-                        throw new NotFoundException("Không tìm thấy order" + orderInfo);
-                    }
-            );
+        if (orderOpt.isPresent()) {
+            Order order = orderOpt.get();
+
+            if (responseCode.equals("00")) {
+                order.setPaymentStatus(PaymentStatus.PAID);
+                order.setOrderStatus(OrderStatus.READY);
+                mongoTemplate.save(order);
+                return true;
+            } else {
+                order.setPaymentStatus(PaymentStatus.FAILED);
+                mongoTemplate.save(order);
+                return false;
+            }
         } else {
-            order.ifPresent(ord -> {
-                ord.setPaymentStatus(PaymentStatus.FAILED);
-                mongoTemplate.save(ord);
-                transactionStatus.setStatus("failed");
-                transactionStatus.setMessage("failed");
-            });
+            throw new NotFoundException("Order not found with ID: " + orderInfo);
         }
-
-        return transactionStatus;
     }
+
 }

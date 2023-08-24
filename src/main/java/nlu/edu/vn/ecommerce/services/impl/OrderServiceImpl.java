@@ -5,6 +5,7 @@ import nlu.edu.vn.ecommerce.models.*;
 import nlu.edu.vn.ecommerce.models.enums.OrderStatus;
 import nlu.edu.vn.ecommerce.models.enums.OrderType;
 import nlu.edu.vn.ecommerce.models.enums.PaymentStatus;
+import nlu.edu.vn.ecommerce.models.enums.PaymentType;
 import nlu.edu.vn.ecommerce.repositories.CartRepository;
 import nlu.edu.vn.ecommerce.repositories.OrderRepository;
 import nlu.edu.vn.ecommerce.services.IOrderService;
@@ -48,7 +49,12 @@ public class OrderServiceImpl implements IOrderService {
             order.setCreateAt(new Timestamp().getTime());
             order.setShopId(cartDTO.getCartItems().get(0).getShop().getId());
             order.setOrderType(OrderType.SELL);
-            order.setOrderStatus(OrderStatus.PROCESSING);
+            if(cartDTO.getPaymentType().equals(PaymentType.TRANSFER)){
+                order.setOrderStatus(OrderStatus.UNPAID);
+            }
+            else{
+                order.setOrderStatus(OrderStatus.PROCESSING);
+            }
             order.setPaymentType(cartDTO.getPaymentType());
             order.setPaymentStatus(PaymentStatus.PENDING);
 
@@ -139,6 +145,7 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
+
 
     @Override
     public Page<Order> getOrdersByShopIdAndStatus(String shopId, String orderStatus, Pageable pageable) {

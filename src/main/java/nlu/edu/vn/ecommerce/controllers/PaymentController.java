@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.*;
 
 @RestController
@@ -31,20 +32,26 @@ public class PaymentController {
     @PostMapping("/create-payment")
     public ResponseEntity<?> submidOrder(@RequestParam("amount") int orderTotal,
                                          @RequestParam("orderInfo") String orderInfo) {
-        String baseUrl = "http://localhost:3024";
+        String baseUrl = "https://dancing-nougat-c9d599.netlify.app";
         String vnpayUrl = vnPayService.createOrder(orderTotal, orderInfo, baseUrl);
 
         return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", vnpayUrl));
     }
 
-    @GetMapping("payment-info")
+    @GetMapping("/payment-info")
     public ResponseEntity<?> transaction(@RequestParam(value = "vnp_Amount") String amount,
                                          @RequestParam(value = "vnp_BankCode") String bankCode,
                                          @RequestParam(value = "vnp_OrderInfo") String orderInfo,
                                          @RequestParam(value = "vnp_ResponseCode") String responseCode) {
 
-        TransactionStatus transactionStatus = iPaymentService.processPayment(amount, bankCode, orderInfo, responseCode);
-        return ResponseEntity.status(HttpStatus.OK).body(transactionStatus);
+        boolean payment = iPaymentService.processPayment(amount, bankCode, orderInfo, responseCode);
+        if (payment) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("oke", "Thanh toán thành công !", null));
+
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("failed", "Thanh toán thất bại!", null));
+
+        }
     }
 
 
