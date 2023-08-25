@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -44,6 +45,8 @@ public class Order extends BaseEntity {
     private String  shopId;
 
     private PaymentStatus paymentStatus;
+
+    private Date canceledAt;
 
 
 }

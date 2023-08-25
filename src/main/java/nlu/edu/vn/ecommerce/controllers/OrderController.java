@@ -49,7 +49,7 @@ public class OrderController {
     })
     @PreAuthorize("#user.id == #userId")
     public ResponseEntity<?> getOrdersByUserId(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable("userId") String userId) {
-        List<Order> orders = iOrderService.getOrdersByUserId(userId);
+        List<Order> orders = iOrderService.getOrdersForUser(userId);
         if (orders == null) {
             throw new NotFoundException("Không tìm thấy đơn hàng nào theo userId" + userId);
         }

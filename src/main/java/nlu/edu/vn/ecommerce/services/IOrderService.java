@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface IOrderService {
     String order(CartDTO cartDTO,String userId);
     List<Order> getOrdersByUserId(String userId);
+    List<Order> getOrdersForUser(String userId);
     Page<Order> findByShopId(String shopId, Pageable pageable);
     List<Order> getAllOrders();
     boolean updateOrderStatusDelivered(String orderId);

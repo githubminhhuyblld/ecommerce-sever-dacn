@@ -15,9 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -123,6 +126,7 @@ public class OrderServiceImpl implements IOrderService {
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
             order.setOrderStatus(OrderStatus.CANCELED);
+            order.setCanceledAt(new Date());
             order.setUpdateAt(new Timestamp().getTime());
             orderRepository.save(order);
             return true;
@@ -171,5 +175,25 @@ public class OrderServiceImpl implements IOrderService {
     public Optional<Order> findById(String id) {
         return orderRepository.findById(id);
     }
+
+    @Override
+    public List<Order> getOrdersForUser(String userId) {
+        Date threeDaysAgo = Date.from(Instant.now().minus(Duration.ofDays(3)));
+        return orderRepository.findByUserIdAndOrderStatusNotOrOrderStatusAndCanceledAtAfter(
+                userId,
+                OrderStatus.CANCELED,
+                OrderStatus.CANCELED,
+                threeDaysAgo);
+    }
+    @Scheduled(fixedRate = 30000) // 30 giây
+    public void testGetOrdersForUser() {
+        String testUserId = "6475590403cc4931f154ad70";
+        List<Order> orders = getOrdersForUser(testUserId);
+
+        orders.forEach(order -> {
+            System.out.println(order);
+        });
+    }
+
 
 }
