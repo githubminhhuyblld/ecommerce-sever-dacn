@@ -33,6 +33,7 @@ public class PaymentController {
     public ResponseEntity<?> submidOrder(@RequestParam("amount") int orderTotal,
                                          @RequestParam("orderInfo") String orderInfo) {
         String baseUrl = "https://dancing-nougat-c9d599.netlify.app";
+//        String baseUrl = "http://localhost:3024";
         String vnpayUrl = vnPayService.createOrder(orderTotal, orderInfo, baseUrl);
 
         return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", vnpayUrl));

@@ -12,6 +12,7 @@ public interface CartRepository extends MongoRepository<Cart,String> {
     List<Cart> getCartByUserId(String userId);
     void deleteByUserId(String userId);
     Cart findByUserIdAndCartItemProductId(String userId, String productId);
+    Cart findByIdAndUserId(String id,String userId);
     void deleteByUserIdAndCartItemProductId(String userId, String productId);
 
 

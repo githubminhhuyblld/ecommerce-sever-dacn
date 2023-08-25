@@ -56,8 +56,8 @@ public class CartServiceImpl implements ICartService {
 
 
     @Override
-    public boolean removeItemFromCart(String userId, String productId) {
-        Cart cart = cartRepository.findByUserIdAndCartItemProductId(userId, productId);
+    public boolean removeItemFromCart(String userId, String cartId) {
+        Cart cart = cartRepository.findByIdAndUserId(cartId, userId);
         if (cart != null) {
             cartRepository.deleteById(cart.getId());
             return true;
