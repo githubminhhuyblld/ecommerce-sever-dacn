@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import nlu.edu.vn.ecommerce.dto.ShopDTO;
+import nlu.edu.vn.ecommerce.models.enums.CommentStatus;
 
 import java.math.BigDecimal;
 
@@ -37,4 +38,6 @@ public class CartItem {
     private String categoryId;
 
     private ShopDTO shop;
+
+    private CommentStatus comment;
 }

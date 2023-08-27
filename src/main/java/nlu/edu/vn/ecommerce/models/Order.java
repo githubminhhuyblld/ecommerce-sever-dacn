@@ -2,10 +2,7 @@ package nlu.edu.vn.ecommerce.models;
 
 import lombok.*;
 import nlu.edu.vn.ecommerce.base.BaseEntity;
-import nlu.edu.vn.ecommerce.models.enums.OrderStatus;
-import nlu.edu.vn.ecommerce.models.enums.OrderType;
-import nlu.edu.vn.ecommerce.models.enums.PaymentStatus;
-import nlu.edu.vn.ecommerce.models.enums.PaymentType;
+import nlu.edu.vn.ecommerce.models.enums.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -52,7 +49,6 @@ public class Order extends BaseEntity {
     private Date deliveredAt;
 
     private Date readyAt;
-
 
 
 

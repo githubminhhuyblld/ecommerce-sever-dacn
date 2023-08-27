@@ -2,10 +2,7 @@ package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.dto.CartDTO;
 import nlu.edu.vn.ecommerce.models.*;
-import nlu.edu.vn.ecommerce.models.enums.OrderStatus;
-import nlu.edu.vn.ecommerce.models.enums.OrderType;
-import nlu.edu.vn.ecommerce.models.enums.PaymentStatus;
-import nlu.edu.vn.ecommerce.models.enums.PaymentType;
+import nlu.edu.vn.ecommerce.models.enums.*;
 import nlu.edu.vn.ecommerce.repositories.CartRepository;
 import nlu.edu.vn.ecommerce.repositories.OrderRepository;
 import nlu.edu.vn.ecommerce.services.IOrderService;
@@ -39,7 +36,9 @@ public class OrderServiceImpl implements IOrderService {
             order.setUserId(userId);
             BigDecimal totalOrderPrice = BigDecimal.ZERO;
 
+
             for (CartItem cartItem : cartDTO.getCartItems()) {
+                cartItem.setComment(CommentStatus.UNCOMMENTED);
                 BigDecimal itemTotalPrice = cartItem.getNewPrice().multiply(new BigDecimal(cartItem.getAmount()));
                 totalOrderPrice = totalOrderPrice.add(itemTotalPrice);
             }
@@ -66,6 +65,7 @@ public class OrderServiceImpl implements IOrderService {
             // Delete only the cart items that were ordered
             for (CartItem orderedItem : cartDTO.getCartItems()) {
                 cartRepository.deleteByUserIdAndCartItemProductId(userId, orderedItem.getProductId());
+
             }
 
             return savedOrder.getId();
@@ -73,20 +73,11 @@ public class OrderServiceImpl implements IOrderService {
         return null;
     }
 
-
-    private BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        for (CartItem cartItem : cartItems) {
-            BigDecimal itemPrice = cartItem.getNewPrice().multiply(BigDecimal.valueOf(cartItem.getAmount()));
-            totalPrice = totalPrice.add(itemPrice);
-        }
-        return totalPrice;
-    }
-
     @Override
     public List<Order> getOrdersByUserId(String userId) {
         return orderRepository.findByUserIdOrderByCreateAtDesc(userId);
     }
+
 
     @Override
     public Page<Order> findByShopId(String shopId, Pageable pageable) {
@@ -208,11 +199,47 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public List<Order> getOrdersForUser(String userId) {
         Date threeDaysAgo = Date.from(Instant.now().minus(Duration.ofDays(3)));
-        return orderRepository.findByUserIdAndOrderStatusNotOrOrderStatusAndCanceledAtAfter(
+        List<Order> originalOrders = orderRepository.findByUserIdAndOrderStatusNotOrOrderStatusAndCanceledAtAfter(
                 userId,
                 OrderStatus.CANCELED,
                 OrderStatus.CANCELED,
                 threeDaysAgo);
+
+        return splitIntoSeparateOrders(originalOrders);
+    }
+
+    //Lấy ra sau đó tách nhiều sản phẩm thành nhiều order tương ứng
+    private List<Order> splitIntoSeparateOrders(List<Order> originalOrders) {
+        List<Order> splitOrders = new ArrayList<>();
+
+        for (Order order : originalOrders) {
+            for (CartItem cartItem : order.getCartItems()) {
+                Order newOrder = new Order();
+                newOrder.setId(order.getId());
+                newOrder.setUserId(order.getUserId());
+                newOrder.setName(order.getName());
+                newOrder.setEmail(order.getEmail());
+                newOrder.setNumberPhone(order.getNumberPhone());
+                newOrder.setOrderStatus(order.getOrderStatus());
+                newOrder.setOrderType(order.getOrderType());
+                newOrder.setPaymentType(order.getPaymentType());
+                newOrder.setAddress(order.getAddress());
+                newOrder.setShopId(order.getShopId());
+                newOrder.setPaymentStatus(order.getPaymentStatus());
+                newOrder.setReadyAt(order.getReadyAt());
+                newOrder.setCreateAt(order.getCreateAt());
+                newOrder.setUpdateAt(order.getUpdateAt());
+
+                BigDecimal totalPrice = cartItem.getNewPrice().multiply(new BigDecimal(cartItem.getAmount()));
+                newOrder.setTotalPrice(totalPrice);
+
+                newOrder.setCartItems(List.of(cartItem));
+
+                splitOrders.add(newOrder);
+            }
+        }
+
+        return splitOrders;
     }
 
     @Scheduled(cron = "0 0 0 * * ?")

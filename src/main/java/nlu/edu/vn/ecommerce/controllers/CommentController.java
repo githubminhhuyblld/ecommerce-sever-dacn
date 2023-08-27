@@ -1,6 +1,7 @@
 package nlu.edu.vn.ecommerce.controllers;
 
 import nlu.edu.vn.ecommerce.dto.CommentDTO;
+import nlu.edu.vn.ecommerce.dto.CommentResponseDTO;
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
 import nlu.edu.vn.ecommerce.services.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ public class CommentController {
     @Autowired
     private ICommentService iCommentService;
 
-    @PostMapping
+    @PostMapping("")
     public ResponseEntity<?> postComment(@RequestBody CommentDTO commentDTO) {
         CommentDTO savedCommentDTO = iCommentService.addComment(commentDTO);
         if (savedCommentDTO == null) {
@@ -24,9 +25,11 @@ public class CommentController {
         return ResponseEntity.ok().body(new ResponseObject("oke", "Thêm thành công!", savedCommentDTO));
     }
 
+
+
     @GetMapping("/product/{productId}")
     public ResponseEntity<?> getCommentsByProductId(@PathVariable String productId) {
-        List<CommentDTO> comments = iCommentService.getCommentsByProductId(productId);
+        List<CommentResponseDTO> comments = iCommentService.getCommentsByProductId(productId);
         if (comments == null || comments.isEmpty()) {
             return ResponseEntity.ok().body(new ResponseObject("empty", "Không có bình luận nào cho sản phẩm này!", null));
         }

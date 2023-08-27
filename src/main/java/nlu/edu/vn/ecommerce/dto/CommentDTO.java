@@ -8,5 +8,7 @@ public class CommentDTO {
     private String content;
     private String userId;
     private int rating;
+    private String orderId;
+
 
 }

@@ -24,6 +24,8 @@ public class Comment extends BaseEntity {
 
     private int rating;
 
+    private String orderId;
+
     public static CommentDTO toCommentDTO(Comment comment) {
         CommentDTO commentDTO = new CommentDTO();
 
