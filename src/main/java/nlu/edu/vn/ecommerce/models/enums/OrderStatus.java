@@ -8,7 +8,12 @@ public enum OrderStatus {
     PROCESSING("Đơn hàng đang chờ xác nhận"),
     DELIVERED("Đơn hàng đã giao"),
     CANCELED("Đơn hàng đã hủy"),
-    UNPAID("Đơn hàng chưa thanh toán");
+    UNPAID("Đơn hàng chưa thanh toán"),
+    SHIPPING("Đơn hàng đang giao"),
+    RETURNED("Đơn hàng trả lại");
+
+
+
 
     @Getter
     @Setter

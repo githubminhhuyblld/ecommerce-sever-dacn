@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +48,14 @@ public class Order extends BaseEntity {
     private PaymentStatus paymentStatus;
 
     private Date canceledAt;
+
+    private Date deliveredAt;
+
+    private Date readyAt;
+
+
+
+
 
 
 }

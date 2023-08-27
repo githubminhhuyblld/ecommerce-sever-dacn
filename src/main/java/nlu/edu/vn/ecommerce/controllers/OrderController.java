@@ -79,6 +79,32 @@ public class OrderController {
 
         }
     }
+    @PutMapping("/{orderId}/status/shipping")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> updateOrderStatusShipping(@PathVariable String orderId) {
+        if (iOrderService.updateOrderStatusShipping(orderId)) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "update status Shipping thành công!", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ResponseObject("oke", "update status Shipping thất bại!", null));
+
+        }
+    }
+
+    @PutMapping("/{orderId}/status/returned")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
+    })
+    public ResponseEntity<?> updateOrderStatusReturned(@PathVariable String orderId) {
+        if (iOrderService.updateOrderStatusReturned(orderId)) {
+            return ResponseEntity.ok().body(new ResponseObject("oke", "update status Shipping thành công!", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ResponseObject("oke", "update status Shipping thất bại!", null));
+
+        }
+    }
 
     @PutMapping("/{orderId}/status/canceled")
     @PreAuthorize("#user.id == #userId")

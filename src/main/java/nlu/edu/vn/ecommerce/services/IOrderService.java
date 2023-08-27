@@ -17,6 +17,9 @@ public interface IOrderService {
     boolean updateOrderStatusDelivered(String orderId);
     boolean updateOrderStatusCanceled(String orderId);
     boolean updateOrderStatusReady(String orderId);
+
+    boolean updateOrderStatusShipping(String orderId);
+    boolean updateOrderStatusReturned(String orderId);
     Page<Order> getOrdersByShopIdAndStatus(String shopId, String orderStatus, Pageable pageable);
     Page<Order> findByShopIdOrderByCreatedAtDesc(String shopId, int page, int size);
     boolean deleteOrderById(String id);

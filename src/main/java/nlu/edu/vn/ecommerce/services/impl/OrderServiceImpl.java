@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class OrderServiceImpl implements IOrderService {
@@ -52,10 +53,9 @@ public class OrderServiceImpl implements IOrderService {
             order.setCreateAt(new Timestamp().getTime());
             order.setShopId(cartDTO.getCartItems().get(0).getShop().getId());
             order.setOrderType(OrderType.SELL);
-            if(cartDTO.getPaymentType().equals(PaymentType.TRANSFER)){
+            if (cartDTO.getPaymentType().equals(PaymentType.TRANSFER)) {
                 order.setOrderStatus(OrderStatus.UNPAID);
-            }
-            else{
+            } else {
                 order.setOrderStatus(OrderStatus.PROCESSING);
             }
             order.setPaymentType(cartDTO.getPaymentType());
@@ -72,8 +72,6 @@ public class OrderServiceImpl implements IOrderService {
         }
         return null;
     }
-
-
 
 
     private BigDecimal calculateTotalPrice(List<CartItem> cartItems) {
@@ -142,6 +140,37 @@ public class OrderServiceImpl implements IOrderService {
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
             order.setOrderStatus(OrderStatus.READY);
+            order.setReadyAt(new Date());
+            order.setUpdateAt(new Timestamp().getTime());
+            orderRepository.save(order);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateOrderStatusShipping(String orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setOrderStatus(OrderStatus.SHIPPING);
+            order.setUpdateAt(new Timestamp().getTime());
+            orderRepository.save(order);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateOrderStatusReturned(String orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setOrderStatus(OrderStatus.RETURNED);
             order.setUpdateAt(new Timestamp().getTime());
             orderRepository.save(order);
             return true;
@@ -185,15 +214,45 @@ public class OrderServiceImpl implements IOrderService {
                 OrderStatus.CANCELED,
                 threeDaysAgo);
     }
-    @Scheduled(fixedRate = 30000) // 30 giây
-    public void testGetOrdersForUser() {
-        String testUserId = "6475590403cc4931f154ad70";
-        List<Order> orders = getOrdersForUser(testUserId);
 
-        orders.forEach(order -> {
-            System.out.println(order);
-        });
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void autoDeliverOrders() {
+        List<Order> readyOrders = orderRepository.findByOrderStatus(OrderStatus.READY);
+        Date now = new Date();
+        for (Order order : readyOrders) {
+            long differenceInMillis = now.getTime() - order.getReadyAt().getTime();
+            long differenceInDays = TimeUnit.MILLISECONDS.toDays(differenceInMillis);
+
+            if (differenceInDays >= 3) {
+                order.setOrderStatus(OrderStatus.DELIVERED);
+                orderRepository.save(order);
+            }
+        }
     }
+//    @Scheduled(fixedRate = 30000) // Chạy tác vụ mỗi 30 giây
+//    public void autoDeliverOrders() {
+//        List<Order> readyOrders = orderRepository.findByOrderStatus(OrderStatus.READY);
+//        Date now = new Date();
+//
+//        for (Order order : readyOrders) {
+//            long differenceInMillis = now.getTime() - order.getReadyAt().getTime();
+//
+//            if (differenceInMillis >= 30000) {
+//                order.setOrderStatus(OrderStatus.DELIVERED);
+//                orderRepository.save(order);
+//            }
+//        }
+//    }
+
+//    @Scheduled(fixedRate = 30000) // 30 giây
+//    public void testGetOrdersForUser() {
+//        String testUserId = "6475590403cc4931f154ad70";
+//        List<Order> orders = getOrdersForUser(testUserId);
+//
+//        orders.forEach(order -> {
+//            System.out.println(order);
+//        });
+//    }
 
 
 }

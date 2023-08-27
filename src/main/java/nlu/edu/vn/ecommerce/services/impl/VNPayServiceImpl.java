@@ -124,6 +124,7 @@ public class VNPayServiceImpl implements IPaymentService {
             if (responseCode.equals("00")) {
                 order.setPaymentStatus(PaymentStatus.PAID);
                 order.setOrderStatus(OrderStatus.READY);
+                order.setReadyAt(new Date());
                 mongoTemplate.save(order);
                 return true;
             } else {

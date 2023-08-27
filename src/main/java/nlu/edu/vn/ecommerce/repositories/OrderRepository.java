@@ -28,6 +28,8 @@ public interface OrderRepository extends MongoRepository<Order,String> {
             OrderStatus status2,
             Date cutoffDate);
 
+    List<Order> findByOrderStatus(OrderStatus orderStatus);
+
 
 
 }
