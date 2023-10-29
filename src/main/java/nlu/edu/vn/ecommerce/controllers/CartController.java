@@ -19,13 +19,18 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/cart")
 public class CartController {
     @Autowired
     private ICartService iCartService;
+
+
 
     @GetMapping("/{userId}")
     @PreAuthorize("#user.id == #userId")
@@ -57,9 +62,10 @@ public class CartController {
             @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, dataType = "string", paramType = "header")
     })
     @PreAuthorize("#user.id == #userId")
-    public ResponseEntity<?> updateCartItemQuantity(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable String productId,
-                                                    @RequestParam("userId") String userId,
-                                                    @RequestParam("amount") int amount) {
+    public ResponseEntity<?> updateCartItemQuantity(@ApiIgnore @AuthenticationPrincipal User user,
+                                                    @PathVariable String productId,
+                                                    @RequestParam(name ="userId",required = false ) String userId,
+                                                    @RequestParam(name="amount",required = false) int amount) {
         CartItem item = iCartService.updateCartItemQuantityByProductIdAndUserId(productId, userId, amount);
         if (item == null) {
             return ResponseEntity.badRequest().body(new ErrorException(HttpStatus.NOT_FOUND, "update số lượng thất bại"));
