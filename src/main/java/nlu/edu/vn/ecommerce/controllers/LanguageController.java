@@ -23,7 +23,6 @@ public class LanguageController {
                     resourceBundle.getString(key)); // key = "hello", value = "Xin chào"
         }
         return result;
-
     }
 }
 

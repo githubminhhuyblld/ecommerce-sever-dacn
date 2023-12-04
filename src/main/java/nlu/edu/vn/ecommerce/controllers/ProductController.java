@@ -31,7 +31,6 @@ public class ProductController {
     @Autowired
     private IProductService iProductService;
 
-
     @GetMapping("")
     @ApiOperation(value = "Get all products", notes = "Get all products with optional max result", response = ResponseArray.class)
     @ApiResponses(value = {
@@ -64,12 +63,6 @@ public class ProductController {
     })
     public ResponseEntity<?> insertProduct(@RequestBody ProductRequest request, @RequestParam("userId") String userId) {
         List<Product> products = iProductService.findProductByName(request.getName());
-//        if (products.size() > 0) {
-//            return ResponseEntity.badRequest().body(
-//                    new ResponseObject("PRODUCT_FOUNDED", "Tên sản phẩm đã tồn tại", null)
-//            );
-//        }
-
         Product product = iProductService.insertProduct(request, userId);
         return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", product));
     }

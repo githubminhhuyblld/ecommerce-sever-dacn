@@ -2,7 +2,6 @@ package nlu.edu.vn.ecommerce.controllers;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import nlu.edu.vn.ecommerce.dto.ShopDTO;
 import nlu.edu.vn.ecommerce.exception.ErrorException;
 import nlu.edu.vn.ecommerce.exception.MyException;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
@@ -19,10 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/cart")

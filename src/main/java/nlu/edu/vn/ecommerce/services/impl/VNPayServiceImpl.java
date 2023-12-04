@@ -1,9 +1,7 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.config.VNPayConfig;
-import nlu.edu.vn.ecommerce.dto.TransactionStatus;
 import nlu.edu.vn.ecommerce.exception.DuplicateRecordException;
-import nlu.edu.vn.ecommerce.exception.MyException;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.models.Order;
 import nlu.edu.vn.ecommerce.models.enums.OrderStatus;
@@ -13,10 +11,8 @@ import nlu.edu.vn.ecommerce.services.IOrderService;
 import nlu.edu.vn.ecommerce.services.IPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

@@ -49,9 +49,4 @@ public class Order extends BaseEntity {
     private Date deliveredAt;
 
     private Date readyAt;
-
-
-
-
-
 }
