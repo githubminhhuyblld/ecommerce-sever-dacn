@@ -22,11 +22,12 @@ public interface OrderRepository extends MongoRepository<Order,String> {
 
     Page<Order>findByShopIdOrderByCreateAtDesc(String shopId, Pageable pageable);
 
-    List<Order> findByUserIdAndOrderStatusNotOrOrderStatusAndCanceledAtAfter(
+    Page<Order> findByUserIdAndOrderStatusNotOrOrderStatusAndCanceledAtAfter(
             String userId,
             OrderStatus status1,
             OrderStatus status2,
-            Date cutoffDate);
+            Date cutoffDate,
+            Pageable pageable);
 
     List<Order> findByOrderStatus(OrderStatus orderStatus);
 

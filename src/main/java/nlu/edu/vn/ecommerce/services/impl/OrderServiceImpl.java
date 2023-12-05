@@ -1,23 +1,26 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.dto.CartDTO;
+import nlu.edu.vn.ecommerce.dto.OrderStatisticsDTO;
+import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.models.*;
 import nlu.edu.vn.ecommerce.models.enums.*;
 import nlu.edu.vn.ecommerce.repositories.CartRepository;
+import nlu.edu.vn.ecommerce.repositories.OrderManager;
 import nlu.edu.vn.ecommerce.repositories.OrderRepository;
+import nlu.edu.vn.ecommerce.repositories.ShopRepository;
 import nlu.edu.vn.ecommerce.services.IOrderService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.Instant;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +30,10 @@ public class OrderServiceImpl implements IOrderService {
     private OrderRepository orderRepository;
     @Autowired
     private CartRepository cartRepository;
+    @Autowired
+    private OrderManager orderManager;
+    @Autowired
+    private ShopRepository shopRepository;
 
     @Override
     public String order(CartDTO cartDTO, String userId) {
@@ -54,6 +61,9 @@ public class OrderServiceImpl implements IOrderService {
             order.setOrderType(OrderType.SELL);
             if (cartDTO.getPaymentType().equals(PaymentType.TRANSFER)) {
                 order.setOrderStatus(OrderStatus.UNPAID);
+                LocalDateTime startDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(order.getCreateAt()), ZoneId.systemDefault());
+                LocalDateTime endDate = startDate.plus(1, ChronoUnit.WEEKS);
+                order.setEndDate(endDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             } else {
                 order.setOrderStatus(OrderStatus.PROCESSING);
             }
@@ -72,12 +82,6 @@ public class OrderServiceImpl implements IOrderService {
         }
         return null;
     }
-
-    @Override
-    public List<Order> getOrdersByUserId(String userId) {
-        return orderRepository.findByUserIdOrderByCreateAtDesc(userId);
-    }
-
 
     @Override
     public Page<Order> findByShopId(String shopId, Pageable pageable) {
@@ -133,6 +137,9 @@ public class OrderServiceImpl implements IOrderService {
             order.setOrderStatus(OrderStatus.READY);
             order.setReadyAt(new Date());
             order.setUpdateAt(new Timestamp().getTime());
+            LocalDateTime startDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(order.getCreateAt()), ZoneId.systemDefault());
+            LocalDateTime endDate = startDate.plus(1, ChronoUnit.WEEKS);
+            order.setEndDate(endDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             orderRepository.save(order);
             return true;
         } else {
@@ -197,15 +204,104 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public List<Order> getOrdersForUser(String userId) {
+    public List<OrderStatisticsDTO> getOrdersByWeek(String shopId) {
+        Optional<Shop> shop = shopRepository.findById(shopId);
+        if (shop.isEmpty()) {
+            throw new NotFoundException("Shop doesn't exist");
+        }
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        LocalDate endDate = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
+        List<OrderStatisticsDTO> orderStatisticsList = new ArrayList<>();
+        while (!startDate.isAfter(endDate)) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String fromTo = startDate.format(formatter);
+            List<Order> canceledOrders = orderManager.findOrdersCanceledByStartDate(shopId, startDate);
+            List<Order> deliveredOrders = orderManager.findOrdersDeliveredByStartDate(shopId, startDate);
+            OrderStatisticsDTO orderStatisticsDTO = new OrderStatisticsDTO();
+            orderStatisticsDTO.setFromTo(fromTo);
+            orderStatisticsDTO.setCancelOrder(canceledOrders);
+            orderStatisticsDTO.setSoldOrder(deliveredOrders);
+            orderStatisticsList.add(orderStatisticsDTO);
+            startDate = startDate.plusDays(1);
+        }
+        return orderStatisticsList;
+    }
+
+
+    @Override
+    public List<OrderStatisticsDTO> getOrdersByMonth(String shopId) {
+        Optional<Shop> shop = shopRepository.findById(shopId);
+        if (shop.isEmpty()) {
+            throw new NotFoundException("Shop doesn't exist");
+        }
+        LocalDate today = LocalDate.now();
+        YearMonth yearMonth = YearMonth.from(today);
+        int numberOfWeeksInMonth = yearMonth.lengthOfMonth() / 7;
+        List<OrderStatisticsDTO> monthlyStatistics = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        for (int week = 1; week <= numberOfWeeksInMonth; week++) {
+            LocalDate startOfWeek = yearMonth.atDay(1).plusDays((week - 1) * 7);
+            LocalDate endOfWeek = startOfWeek.plusDays(6);
+            String fromTo = startOfWeek.format(formatter) + " - " + endOfWeek.format(formatter);
+            List<Order> canceledOrders = orderManager.findOrdersCanceled(shopId, startOfWeek, endOfWeek);
+            List<Order> deliveredOrders = orderManager.findOrdersDelivered(shopId, startOfWeek, endOfWeek);
+            OrderStatisticsDTO orderStatisticsDTO = new OrderStatisticsDTO();
+            orderStatisticsDTO.setFromTo(fromTo);
+            orderStatisticsDTO.setCancelOrder(canceledOrders);
+            orderStatisticsDTO.setSoldOrder(deliveredOrders);
+            monthlyStatistics.add(orderStatisticsDTO);
+        }
+        return monthlyStatistics;
+    }
+
+
+    @Override
+    public List<OrderStatisticsDTO> getOrdersBySixMonth(String shopId) {
+        LocalDate today = LocalDate.now();
+        LocalDate sixMonthsAgo = today.minusMonths(6);
+
+        List<OrderStatisticsDTO> monthlyStatistics = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        while (sixMonthsAgo.isBefore(today)) {
+            LocalDate startOfMonth = sixMonthsAgo.with(TemporalAdjusters.firstDayOfMonth());
+            LocalDate endOfMonth = sixMonthsAgo.with(TemporalAdjusters.lastDayOfMonth());
+
+            String fromTo = startOfMonth.format(formatter) + " - " + endOfMonth.format(formatter);
+            List<Order> canceledOrders = orderManager.findOrdersCanceled(shopId, startOfMonth, endOfMonth);
+            List<Order> deliveredOrders = orderManager.findOrdersDelivered(shopId, startOfMonth, endOfMonth);
+
+            OrderStatisticsDTO orderStatisticsDTO = new OrderStatisticsDTO();
+            orderStatisticsDTO.setFromTo(fromTo);
+            orderStatisticsDTO.setCancelOrder(canceledOrders);
+            orderStatisticsDTO.setSoldOrder(deliveredOrders);
+
+            monthlyStatistics.add(orderStatisticsDTO);
+
+            sixMonthsAgo = sixMonthsAgo.plusMonths(1);
+        }
+
+        return monthlyStatistics;
+    }
+
+
+    @Override
+    public Page<Order> getOrdersForUser(String userId,int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
+
         Date threeDaysAgo = Date.from(Instant.now().minus(Duration.ofDays(3)));
-        List<Order> originalOrders = orderRepository.findByUserIdAndOrderStatusNotOrOrderStatusAndCanceledAtAfter(
+        Page<Order> originalOrdersPage = orderRepository.findByUserIdAndOrderStatusNotOrOrderStatusAndCanceledAtAfter(
                 userId,
                 OrderStatus.CANCELED,
                 OrderStatus.CANCELED,
-                threeDaysAgo);
+                threeDaysAgo,
+                pageable);
 
-        return splitIntoSeparateOrders(originalOrders);
+        List<Order> originalOrders = originalOrdersPage.getContent();
+        List<Order> splitOrders = splitIntoSeparateOrders(originalOrders);
+
+        return new PageImpl<>(splitOrders, pageable, originalOrdersPage.getTotalElements());
     }
 
     //Lấy ra sau đó tách nhiều sản phẩm thành nhiều order tương ứng
