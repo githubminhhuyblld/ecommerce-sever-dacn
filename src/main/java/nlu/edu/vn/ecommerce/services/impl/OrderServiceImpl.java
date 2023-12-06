@@ -289,8 +289,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public Page<Order> getOrdersForUser(String userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
-
+        Pageable pageable = PageRequest.of(page, size);
         LocalDate threeDaysAgoLocalDate = LocalDate.now().minusDays(3);
 
         List<Order> originalOrders = orderManager.findOrdersForUser(userId, threeDaysAgoLocalDate);
@@ -302,7 +301,6 @@ public class OrderServiceImpl implements IOrderService {
 
         return new PageImpl<>(ordersToReturn, pageable, splitOrders.size());
     }
-
 
     //Lấy ra sau đó tách nhiều sản phẩm thành nhiều order tương ứng
     private List<Order> splitIntoSeparateOrders(List<Order> originalOrders) {

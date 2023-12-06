@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -77,6 +78,8 @@ public class OrderManager {
                 )
         );
         Query query = Query.query(criteria);
+        query.with(Sort.by(Sort.Order.desc("createAt")));
+
         return mongoTemplate.find(query, Order.class, COLLECTION);
     }
 
