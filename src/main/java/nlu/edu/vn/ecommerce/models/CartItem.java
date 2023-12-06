@@ -1,6 +1,5 @@
 package nlu.edu.vn.ecommerce.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,13 +24,11 @@ public class CartItem {
 
     private BigDecimal newPrice;
 
-
     private BigDecimal oldPrice;
 
     private String description;
 
     private int amount;
-
 
     private int sale;
 

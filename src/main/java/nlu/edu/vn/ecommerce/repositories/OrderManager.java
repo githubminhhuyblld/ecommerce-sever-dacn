@@ -65,6 +65,23 @@ public class OrderManager {
         return mongoTemplate.find(query, Order.class);
     }
 
+    public List<Order> findOrdersForUser(String userId, LocalDate cutoffDate) {
+        LocalDateTime cutoffDateTime = cutoffDate.atStartOfDay();
+        long cutoffTimestamp = cutoffDateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+        Criteria criteria = new Criteria().andOperator(
+                Criteria.where("userId").is(userId),
+                new Criteria().orOperator(
+                        Criteria.where("orderStatus").ne(OrderStatus.CANCELED.toString()),
+                        Criteria.where("orderStatus").is(OrderStatus.CANCELED.toString())
+                                .and("canceledAt").gt(cutoffTimestamp)
+                )
+        );
+        Query query = Query.query(criteria);
+        return mongoTemplate.find(query, Order.class, COLLECTION);
+    }
+
+
+
 
 
 }

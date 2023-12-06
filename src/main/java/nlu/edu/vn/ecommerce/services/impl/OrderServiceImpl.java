@@ -5,10 +5,7 @@ import nlu.edu.vn.ecommerce.dto.OrderStatisticsDTO;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.models.*;
 import nlu.edu.vn.ecommerce.models.enums.*;
-import nlu.edu.vn.ecommerce.repositories.CartRepository;
-import nlu.edu.vn.ecommerce.repositories.OrderManager;
-import nlu.edu.vn.ecommerce.repositories.OrderRepository;
-import nlu.edu.vn.ecommerce.repositories.ShopRepository;
+import nlu.edu.vn.ecommerce.repositories.*;
 import nlu.edu.vn.ecommerce.services.IOrderService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class OrderServiceImpl implements IOrderService {
@@ -34,6 +30,8 @@ public class OrderServiceImpl implements IOrderService {
     private OrderManager orderManager;
     @Autowired
     private ShopRepository shopRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public String order(CartDTO cartDTO, String userId) {
@@ -203,6 +201,14 @@ public class OrderServiceImpl implements IOrderService {
         return orderRepository.findById(id);
     }
 
+    private BigDecimal calculateTotalSales(List<Order> orders) {
+        BigDecimal totalSales = BigDecimal.ZERO;
+        for (Order order : orders) {
+            totalSales = totalSales.add(order.getTotalPrice());
+        }
+        return totalSales;
+    }
+
     @Override
     public List<OrderStatisticsDTO> getOrdersByWeek(String shopId) {
         Optional<Shop> shop = shopRepository.findById(shopId);
@@ -218,10 +224,12 @@ public class OrderServiceImpl implements IOrderService {
             String fromTo = startDate.format(formatter);
             List<Order> canceledOrders = orderManager.findOrdersCanceledByStartDate(shopId, startDate);
             List<Order> deliveredOrders = orderManager.findOrdersDeliveredByStartDate(shopId, startDate);
+            BigDecimal dailyTotalSale = calculateTotalSales(deliveredOrders);
             OrderStatisticsDTO orderStatisticsDTO = new OrderStatisticsDTO();
             orderStatisticsDTO.setFromTo(fromTo);
             orderStatisticsDTO.setCancelOrder(canceledOrders);
             orderStatisticsDTO.setSoldOrder(deliveredOrders);
+            orderStatisticsDTO.setTotalSale(dailyTotalSale);
             orderStatisticsList.add(orderStatisticsDTO);
             startDate = startDate.plusDays(1);
         }
@@ -246,10 +254,12 @@ public class OrderServiceImpl implements IOrderService {
             String fromTo = startOfWeek.format(formatter) + " - " + endOfWeek.format(formatter);
             List<Order> canceledOrders = orderManager.findOrdersCanceled(shopId, startOfWeek, endOfWeek);
             List<Order> deliveredOrders = orderManager.findOrdersDelivered(shopId, startOfWeek, endOfWeek);
+            BigDecimal dailyTotalSale = calculateTotalSales(deliveredOrders);
             OrderStatisticsDTO orderStatisticsDTO = new OrderStatisticsDTO();
             orderStatisticsDTO.setFromTo(fromTo);
             orderStatisticsDTO.setCancelOrder(canceledOrders);
             orderStatisticsDTO.setSoldOrder(deliveredOrders);
+            orderStatisticsDTO.setTotalSale(dailyTotalSale);
             monthlyStatistics.add(orderStatisticsDTO);
         }
         return monthlyStatistics;
@@ -271,12 +281,12 @@ public class OrderServiceImpl implements IOrderService {
             String fromTo = startOfMonth.format(formatter) + " - " + endOfMonth.format(formatter);
             List<Order> canceledOrders = orderManager.findOrdersCanceled(shopId, startOfMonth, endOfMonth);
             List<Order> deliveredOrders = orderManager.findOrdersDelivered(shopId, startOfMonth, endOfMonth);
-
+            BigDecimal dailyTotalSale = calculateTotalSales(deliveredOrders);
             OrderStatisticsDTO orderStatisticsDTO = new OrderStatisticsDTO();
             orderStatisticsDTO.setFromTo(fromTo);
             orderStatisticsDTO.setCancelOrder(canceledOrders);
             orderStatisticsDTO.setSoldOrder(deliveredOrders);
-
+            orderStatisticsDTO.setTotalSale(dailyTotalSale);
             monthlyStatistics.add(orderStatisticsDTO);
 
             sixMonthsAgo = sixMonthsAgo.plusMonths(1);
@@ -287,22 +297,21 @@ public class OrderServiceImpl implements IOrderService {
 
 
     @Override
-    public Page<Order> getOrdersForUser(String userId,int page, int size) {
+    public Page<Order> getOrdersForUser(String userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
 
-        Date threeDaysAgo = Date.from(Instant.now().minus(Duration.ofDays(3)));
-        Page<Order> originalOrdersPage = orderRepository.findByUserIdAndOrderStatusNotOrOrderStatusAndCanceledAtAfter(
-                userId,
-                OrderStatus.CANCELED,
-                OrderStatus.CANCELED,
-                threeDaysAgo,
-                pageable);
+        LocalDate threeDaysAgoLocalDate = LocalDate.now().minusDays(3);
 
-        List<Order> originalOrders = originalOrdersPage.getContent();
+        List<Order> originalOrders = orderManager.findOrdersForUser(userId, threeDaysAgoLocalDate);
         List<Order> splitOrders = splitIntoSeparateOrders(originalOrders);
 
-        return new PageImpl<>(splitOrders, pageable, originalOrdersPage.getTotalElements());
+        int fromIndex = pageable.getPageNumber() * pageable.getPageSize();
+        int toIndex = Math.min(fromIndex + pageable.getPageSize(), splitOrders.size());
+        List<Order> ordersToReturn = splitOrders.subList(fromIndex, toIndex);
+
+        return new PageImpl<>(ordersToReturn, pageable, splitOrders.size());
     }
+
 
     //Lấy ra sau đó tách nhiều sản phẩm thành nhiều order tương ứng
     private List<Order> splitIntoSeparateOrders(List<Order> originalOrders) {
@@ -328,9 +337,7 @@ public class OrderServiceImpl implements IOrderService {
 
                 BigDecimal totalPrice = cartItem.getNewPrice().multiply(new BigDecimal(cartItem.getAmount()));
                 newOrder.setTotalPrice(totalPrice);
-
                 newOrder.setCartItems(List.of(cartItem));
-
                 splitOrders.add(newOrder);
             }
         }
@@ -338,20 +345,37 @@ public class OrderServiceImpl implements IOrderService {
         return splitOrders;
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    //    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(fixedRate = 30000) // Chạy tác vụ mỗi 30 giây
     public void autoDeliverOrders() {
         List<Order> readyOrders = orderRepository.findByOrderStatus(OrderStatus.READY);
         Date now = new Date();
+
         for (Order order : readyOrders) {
             long differenceInMillis = now.getTime() - order.getReadyAt().getTime();
-            long differenceInDays = TimeUnit.MILLISECONDS.toDays(differenceInMillis);
 
-            if (differenceInDays >= 3) {
+            if (differenceInMillis >= 30000) {
                 order.setOrderStatus(OrderStatus.DELIVERED);
                 orderRepository.save(order);
+                List<CartItem> cartItems = order.getCartItems();
+                for (CartItem cartItem : cartItems) {
+                    Optional<Product> productOptional = productRepository.findById(cartItem.getProductId());
+                    if (productOptional.isPresent()) {
+                        Product product = productOptional.get();
+                        int currentQuantity = product.getQuantity();
+                        int amountPurchased = cartItem.getAmount();
+                        int newQuantity = currentQuantity - amountPurchased;
+                        product.setQuantity(newQuantity);
+                        productRepository.save(product);
+                    } else {
+                        throw new NotFoundException("Product not found");
+                    }
+                }
             }
         }
     }
+
+
 //    @Scheduled(fixedRate = 30000) // Chạy tác vụ mỗi 30 giây
 //    public void autoDeliverOrders() {
 //        List<Order> readyOrders = orderRepository.findByOrderStatus(OrderStatus.READY);
