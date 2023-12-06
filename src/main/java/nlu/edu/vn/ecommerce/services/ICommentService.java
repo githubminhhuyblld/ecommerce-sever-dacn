@@ -1,7 +1,7 @@
 package nlu.edu.vn.ecommerce.services;
 
-import nlu.edu.vn.ecommerce.dto.CommentDTO;
-import nlu.edu.vn.ecommerce.dto.CommentResponseDTO;
+import nlu.edu.vn.ecommerce.dto.comment.CommentDTO;
+import nlu.edu.vn.ecommerce.dto.comment.CommentResponseDTO;
 
 import java.util.List;
 

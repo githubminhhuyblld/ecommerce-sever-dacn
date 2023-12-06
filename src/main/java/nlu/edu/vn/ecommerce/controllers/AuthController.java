@@ -1,18 +1,18 @@
 package nlu.edu.vn.ecommerce.controllers;
 
-import nlu.edu.vn.ecommerce.dto.TokenDTO;
+import nlu.edu.vn.ecommerce.dto.auth.TokenDTO;
 import nlu.edu.vn.ecommerce.exception.ErrorException;
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
 import nlu.edu.vn.ecommerce.jwt.JwtHelper;
-import nlu.edu.vn.ecommerce.models.RefreshToken;
-import nlu.edu.vn.ecommerce.models.Role;
+import nlu.edu.vn.ecommerce.models.auth.RefreshToken;
+import nlu.edu.vn.ecommerce.models.role.Role;
 import nlu.edu.vn.ecommerce.models.enums.ServiceType;
-import nlu.edu.vn.ecommerce.models.User;
-import nlu.edu.vn.ecommerce.repositories.RefreshTokenRepository;
-import nlu.edu.vn.ecommerce.repositories.RoleRepository;
-import nlu.edu.vn.ecommerce.repositories.UserRepository;
-import nlu.edu.vn.ecommerce.request.LoginRequest;
-import nlu.edu.vn.ecommerce.request.SignupRequest;
+import nlu.edu.vn.ecommerce.models.user.User;
+import nlu.edu.vn.ecommerce.repositories.token.RefreshTokenRepository;
+import nlu.edu.vn.ecommerce.repositories.role.RoleRepository;
+import nlu.edu.vn.ecommerce.repositories.user.UserRepository;
+import nlu.edu.vn.ecommerce.request.login.LoginRequest;
+import nlu.edu.vn.ecommerce.request.register.SignupRequest;
 import nlu.edu.vn.ecommerce.services.UserService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +47,8 @@ public class AuthController {
     PasswordEncoder passwordEncoder;
     @Autowired
     UserService userService;
-
     @Autowired
     private RoleRepository roleRepository;
-
-
     @PostMapping("login")
     @Transactional
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {

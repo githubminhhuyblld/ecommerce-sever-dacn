@@ -9,16 +9,26 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
+/**
+ * Configuration class for VNPay integration.
+ * Provides utility methods for VNPay payment processing.
+ */
 public class VNPayConfig {
+    // VNPay API URLs and keys
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_ReturnUrl = "/vnpay-payment";
     public static String vnp_TmnCode = "CJKXT2A2";
-
-    public static String vnp_Version ="2.1.0";
-    public static String vnp_Command ="pay";
+    public static String vnp_Version = "2.1.0";
+    public static String vnp_Command = "pay";
     public static String secretKey = "IVFACJJZDISAZJBSECFBAWBSJCVJVGJX";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
+    /**
+     * Calculates MD5 hash of a given message.
+     *
+     * @param message The message to hash.
+     * @return The MD5 hash of the message.
+     */
     public static String md5(String message) {
         String digest = null;
         try {
@@ -37,6 +47,12 @@ public class VNPayConfig {
         return digest;
     }
 
+    /**
+     * Calculates SHA-256 hash of a given message.
+     *
+     * @param message The message to hash.
+     * @return The SHA-256 hash of the message.
+     */
     public static String Sha256(String message) {
         String digest = null;
         try {
@@ -55,30 +71,15 @@ public class VNPayConfig {
         return digest;
     }
 
-    //Util for VNPAY
-    public static String hashAllFields(Map fields) {
-        List fieldNames = new ArrayList(fields.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder sb = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) fields.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                sb.append(fieldName);
-                sb.append("=");
-                sb.append(fieldValue);
-            }
-            if (itr.hasNext()) {
-                sb.append("&");
-            }
-        }
-        return hmacSHA512(secretKey,sb.toString());
-    }
-
+    /**
+     * Computes a hash for VNPay using HMAC-SHA512.
+     *
+     * @param key  The secret key.
+     * @param data The data to hash.
+     * @return The HMAC-SHA512 hash.
+     */
     public static String hmacSHA512(final String key, final String data) {
         try {
-
             if (key == null || data == null) {
                 throw new NullPointerException();
             }
@@ -93,25 +94,36 @@ public class VNPayConfig {
                 sb.append(String.format("%02x", b & 0xff));
             }
             return sb.toString();
-
         } catch (Exception ex) {
             return "";
         }
     }
 
+    /**
+     * Gets the client's IP address from the request.
+     *
+     * @param request The HTTP request.
+     * @return The client's IP address.
+     */
     public static String getIpAddress(HttpServletRequest request) {
-        String ipAdress;
+        String ipAddress;
         try {
-            ipAdress = request.getHeader("X-FORWARDED-FOR");
-            if (ipAdress == null) {
-                ipAdress = request.getLocalAddr();
+            ipAddress = request.getHeader("X-FORWARDED-FOR");
+            if (ipAddress == null) {
+                ipAddress = request.getLocalAddr();
             }
         } catch (Exception e) {
-            ipAdress = "Invalid IP:" + e.getMessage();
+            ipAddress = "Invalid IP:" + e.getMessage();
         }
-        return ipAdress;
+        return ipAddress;
     }
 
+    /**
+     * Generates a random number with the specified length.
+     *
+     * @param len The length of the random number.
+     * @return A random number as a string.
+     */
     public static String getRandomNumber(int len) {
         Random rnd = new Random();
         String chars = "0123456789";

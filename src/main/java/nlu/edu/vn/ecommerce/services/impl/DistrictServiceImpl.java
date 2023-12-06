@@ -1,13 +1,13 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
-import nlu.edu.vn.ecommerce.dto.DistrictDTO;
+import nlu.edu.vn.ecommerce.dto.district.DistrictDTO;
 import nlu.edu.vn.ecommerce.exception.DuplicateRecordException;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
-import nlu.edu.vn.ecommerce.models.District;
-import nlu.edu.vn.ecommerce.models.Province;
-import nlu.edu.vn.ecommerce.repositories.DistrictRepository;
-import nlu.edu.vn.ecommerce.repositories.ProvinceRepository;
-import nlu.edu.vn.ecommerce.request.DistrictRequest;
+import nlu.edu.vn.ecommerce.models.address.District;
+import nlu.edu.vn.ecommerce.models.address.Province;
+import nlu.edu.vn.ecommerce.repositories.address.DistrictRepository;
+import nlu.edu.vn.ecommerce.repositories.address.ProvinceRepository;
+import nlu.edu.vn.ecommerce.request.address.DistrictRequest;
 import nlu.edu.vn.ecommerce.services.IDistrictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

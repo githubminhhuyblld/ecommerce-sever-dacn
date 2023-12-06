@@ -1,8 +1,7 @@
 package nlu.edu.vn.ecommerce.services;
 
-import nlu.edu.vn.ecommerce.exception.ErrorException;
-import nlu.edu.vn.ecommerce.models.Shop;
-import nlu.edu.vn.ecommerce.request.ShopRequest;
+import nlu.edu.vn.ecommerce.models.shop.Shop;
+import nlu.edu.vn.ecommerce.request.shop.ShopRequest;
 
 public interface IShopService {
     Shop getShopById(String id);

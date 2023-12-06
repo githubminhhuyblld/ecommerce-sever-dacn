@@ -1,16 +1,16 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
-import nlu.edu.vn.ecommerce.dto.CommentDTO;
-import nlu.edu.vn.ecommerce.dto.CommentResponseDTO;
-import nlu.edu.vn.ecommerce.models.CartItem;
-import nlu.edu.vn.ecommerce.models.Order;
-import nlu.edu.vn.ecommerce.models.Product;
-import nlu.edu.vn.ecommerce.models.User;
+import nlu.edu.vn.ecommerce.dto.comment.CommentDTO;
+import nlu.edu.vn.ecommerce.dto.comment.CommentResponseDTO;
+import nlu.edu.vn.ecommerce.models.cart.CartItem;
+import nlu.edu.vn.ecommerce.models.order.Order;
+import nlu.edu.vn.ecommerce.models.product.Product;
+import nlu.edu.vn.ecommerce.models.user.User;
 import nlu.edu.vn.ecommerce.models.comments.Comment;
 import nlu.edu.vn.ecommerce.models.enums.CommentStatus;
-import nlu.edu.vn.ecommerce.repositories.OrderRepository;
-import nlu.edu.vn.ecommerce.repositories.ProductRepository;
-import nlu.edu.vn.ecommerce.repositories.UserRepository;
+import nlu.edu.vn.ecommerce.repositories.order.OrderRepository;
+import nlu.edu.vn.ecommerce.repositories.product.ProductRepository;
+import nlu.edu.vn.ecommerce.repositories.user.UserRepository;
 import nlu.edu.vn.ecommerce.services.ICommentService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements ICommentService {

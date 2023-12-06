@@ -1,8 +1,8 @@
 package nlu.edu.vn.ecommerce.services;
 
-import nlu.edu.vn.ecommerce.dto.ProvinceDTO;
-import nlu.edu.vn.ecommerce.models.Province;
-import nlu.edu.vn.ecommerce.request.ProvinceRequest;
+import nlu.edu.vn.ecommerce.dto.province.ProvinceDTO;
+import nlu.edu.vn.ecommerce.models.address.Province;
+import nlu.edu.vn.ecommerce.request.address.ProvinceRequest;
 
 import java.util.List;
 

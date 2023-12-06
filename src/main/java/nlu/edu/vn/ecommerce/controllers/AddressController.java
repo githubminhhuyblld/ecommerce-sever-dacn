@@ -3,12 +3,12 @@ package nlu.edu.vn.ecommerce.controllers;
 
 import nlu.edu.vn.ecommerce.exception.ResponseArray;
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
-import nlu.edu.vn.ecommerce.models.District;
-import nlu.edu.vn.ecommerce.models.Province;
-import nlu.edu.vn.ecommerce.models.Ward;
-import nlu.edu.vn.ecommerce.request.DistrictRequest;
-import nlu.edu.vn.ecommerce.request.ProvinceRequest;
-import nlu.edu.vn.ecommerce.request.WardRequest;
+import nlu.edu.vn.ecommerce.models.address.District;
+import nlu.edu.vn.ecommerce.models.address.Province;
+import nlu.edu.vn.ecommerce.models.address.Ward;
+import nlu.edu.vn.ecommerce.request.address.DistrictRequest;
+import nlu.edu.vn.ecommerce.request.address.ProvinceRequest;
+import nlu.edu.vn.ecommerce.request.address.WardRequest;
 import nlu.edu.vn.ecommerce.services.IDistrictService;
 import nlu.edu.vn.ecommerce.services.IProvinceService;
 import nlu.edu.vn.ecommerce.services.IWardService;
@@ -17,7 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
 
-
+/**
+ * @author Minh Huy
+ *
+ * Address Controller class.
+ */
 @RestController
 @RequestMapping("/api/v1")
 public class AddressController {

@@ -1,8 +1,7 @@
 package nlu.edu.vn.ecommerce.services;
 
-import nlu.edu.vn.ecommerce.dto.ShopDTO;
-import nlu.edu.vn.ecommerce.models.Cart;
-import nlu.edu.vn.ecommerce.models.CartItem;
+import nlu.edu.vn.ecommerce.models.cart.Cart;
+import nlu.edu.vn.ecommerce.models.cart.CartItem;
 
 import java.util.List;
 

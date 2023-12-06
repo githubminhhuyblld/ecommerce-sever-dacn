@@ -1,11 +1,20 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
-import nlu.edu.vn.ecommerce.dto.ShopDTO;
+import nlu.edu.vn.ecommerce.dto.shop.ShopDTO;
 import nlu.edu.vn.ecommerce.exception.*;
-import nlu.edu.vn.ecommerce.models.*;
+import nlu.edu.vn.ecommerce.models.cart.CartItem;
 import nlu.edu.vn.ecommerce.models.enums.ActiveStatus;
-import nlu.edu.vn.ecommerce.repositories.*;
-import nlu.edu.vn.ecommerce.request.ShopRequest;
+import nlu.edu.vn.ecommerce.models.order.Order;
+import nlu.edu.vn.ecommerce.models.product.Product;
+import nlu.edu.vn.ecommerce.models.role.Role;
+import nlu.edu.vn.ecommerce.models.shop.Shop;
+import nlu.edu.vn.ecommerce.models.user.User;
+import nlu.edu.vn.ecommerce.repositories.order.OrderRepository;
+import nlu.edu.vn.ecommerce.repositories.product.ProductRepository;
+import nlu.edu.vn.ecommerce.repositories.role.RoleRepository;
+import nlu.edu.vn.ecommerce.repositories.shop.ShopRepository;
+import nlu.edu.vn.ecommerce.repositories.user.UserRepository;
+import nlu.edu.vn.ecommerce.request.shop.ShopRequest;
 import nlu.edu.vn.ecommerce.services.IShopService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.BeanUtils;

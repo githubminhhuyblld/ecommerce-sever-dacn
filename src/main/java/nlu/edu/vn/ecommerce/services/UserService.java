@@ -1,7 +1,7 @@
 package nlu.edu.vn.ecommerce.services;
 
-import nlu.edu.vn.ecommerce.models.User;
-import nlu.edu.vn.ecommerce.repositories.UserRepository;
+import nlu.edu.vn.ecommerce.models.user.User;
+import nlu.edu.vn.ecommerce.repositories.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,7 +1,7 @@
 package nlu.edu.vn.ecommerce.services;
 
-import nlu.edu.vn.ecommerce.models.Ward;
-import nlu.edu.vn.ecommerce.request.WardRequest;
+import nlu.edu.vn.ecommerce.models.address.Ward;
+import nlu.edu.vn.ecommerce.request.address.WardRequest;
 
 import java.util.List;
 

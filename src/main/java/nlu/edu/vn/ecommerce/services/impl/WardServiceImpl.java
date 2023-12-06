@@ -2,11 +2,11 @@ package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.exception.DuplicateRecordException;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
-import nlu.edu.vn.ecommerce.models.District;
-import nlu.edu.vn.ecommerce.models.Ward;
-import nlu.edu.vn.ecommerce.repositories.DistrictRepository;
-import nlu.edu.vn.ecommerce.repositories.WardRepository;
-import nlu.edu.vn.ecommerce.request.WardRequest;
+import nlu.edu.vn.ecommerce.models.address.District;
+import nlu.edu.vn.ecommerce.models.address.Ward;
+import nlu.edu.vn.ecommerce.repositories.address.DistrictRepository;
+import nlu.edu.vn.ecommerce.repositories.address.WardRepository;
+import nlu.edu.vn.ecommerce.request.address.WardRequest;
 import nlu.edu.vn.ecommerce.services.IWardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,4 @@
 package nlu.edu.vn.ecommerce.config;
-
-
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -12,14 +9,21 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-
-
-
+/**
+ * @author  Minh Huy
+ *
+ * Configuration class for Swagger documentation.
+ * Enables Swagger2 for API documentation.
+ */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
 
-
+    /**
+     * Configures Swagger Docket for API documentation.
+     *
+     * @return A Docket instance for Swagger.
+     */
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -30,6 +34,11 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo());
     }
 
+    /**
+     * Configures API information for Swagger documentation.
+     *
+     * @return An ApiInfo instance with API details.
+     */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Ecommerce API")
@@ -37,6 +46,6 @@ public class SwaggerConfig {
                 .version("1.0.0")
                 .build();
     }
-
-
 }
+
+

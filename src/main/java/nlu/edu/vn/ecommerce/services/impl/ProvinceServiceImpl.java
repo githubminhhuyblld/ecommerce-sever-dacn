@@ -1,10 +1,10 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
-import nlu.edu.vn.ecommerce.dto.ProvinceDTO;
+import nlu.edu.vn.ecommerce.dto.province.ProvinceDTO;
 import nlu.edu.vn.ecommerce.exception.DuplicateRecordException;
-import nlu.edu.vn.ecommerce.models.Province;
-import nlu.edu.vn.ecommerce.repositories.ProvinceRepository;
-import nlu.edu.vn.ecommerce.request.ProvinceRequest;
+import nlu.edu.vn.ecommerce.models.address.Province;
+import nlu.edu.vn.ecommerce.repositories.address.ProvinceRepository;
+import nlu.edu.vn.ecommerce.request.address.ProvinceRequest;
 import nlu.edu.vn.ecommerce.services.IProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

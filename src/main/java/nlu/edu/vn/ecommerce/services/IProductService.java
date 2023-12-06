@@ -1,7 +1,7 @@
 package nlu.edu.vn.ecommerce.services;
 
-import nlu.edu.vn.ecommerce.models.Product;
-import nlu.edu.vn.ecommerce.request.ProductRequest;
+import nlu.edu.vn.ecommerce.models.product.Product;
+import nlu.edu.vn.ecommerce.request.product.ProductRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

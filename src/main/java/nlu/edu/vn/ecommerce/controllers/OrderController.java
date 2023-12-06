@@ -2,12 +2,12 @@ package nlu.edu.vn.ecommerce.controllers;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import nlu.edu.vn.ecommerce.dto.CartDTO;
-import nlu.edu.vn.ecommerce.dto.OrderStatisticsDTO;
+import nlu.edu.vn.ecommerce.dto.cart.CartDTO;
+import nlu.edu.vn.ecommerce.dto.statistics.OrderStatisticsDTO;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
-import nlu.edu.vn.ecommerce.models.Order;
-import nlu.edu.vn.ecommerce.models.User;
+import nlu.edu.vn.ecommerce.models.order.Order;
+import nlu.edu.vn.ecommerce.models.user.User;
 import nlu.edu.vn.ecommerce.services.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

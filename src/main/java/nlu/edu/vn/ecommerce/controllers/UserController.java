@@ -3,15 +3,15 @@ package nlu.edu.vn.ecommerce.controllers;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import nlu.edu.vn.ecommerce.dto.UserDTO;
+import nlu.edu.vn.ecommerce.dto.auth.UserDTO;
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
-import nlu.edu.vn.ecommerce.models.Address;
-import nlu.edu.vn.ecommerce.models.User;
-import nlu.edu.vn.ecommerce.repositories.UserRepository;
+import nlu.edu.vn.ecommerce.models.address.Address;
+import nlu.edu.vn.ecommerce.models.user.User;
+import nlu.edu.vn.ecommerce.repositories.user.UserRepository;
 
-import nlu.edu.vn.ecommerce.request.AddressRequest;
-import nlu.edu.vn.ecommerce.request.UpdatePasswordRequest;
-import nlu.edu.vn.ecommerce.request.UpdateUserRequest;
+import nlu.edu.vn.ecommerce.request.address.AddressRequest;
+import nlu.edu.vn.ecommerce.request.password.UpdatePasswordRequest;
+import nlu.edu.vn.ecommerce.request.user.UpdateUserRequest;
 import nlu.edu.vn.ecommerce.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

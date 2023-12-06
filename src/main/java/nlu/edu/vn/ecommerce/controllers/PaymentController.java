@@ -16,17 +16,14 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
     @Autowired
     private IPaymentService vnPayService;
-
-
     @Autowired
     private IPaymentService iPaymentService;
 
-
     @PostMapping("/create-payment")
-    public ResponseEntity<?> submidOrder(@RequestParam("amount") int orderTotal,
+    public ResponseEntity<?> submitOrder(@RequestParam("amount") int orderTotal,
                                          @RequestParam("orderInfo") String orderInfo) {
-//        String baseUrl = "https://dancing-nougat-c9d599.netlify.app";
-        String baseUrl = "http://localhost:3024";
+        String baseUrl = "https://illustrious-twilight-80c533.netlify.app";
+//        String baseUrl = "http://localhost:3024";
         String vnpayUrl = vnPayService.createOrder(orderTotal, orderInfo, baseUrl);
 
         return ResponseEntity.ok().body(new ResponseObject("oke", "Thành công", vnpayUrl));
@@ -37,16 +34,12 @@ public class PaymentController {
                                          @RequestParam(value = "vnp_BankCode") String bankCode,
                                          @RequestParam(value = "vnp_OrderInfo") String orderInfo,
                                          @RequestParam(value = "vnp_ResponseCode") String responseCode) {
-
         boolean payment = iPaymentService.processPayment(amount, bankCode, orderInfo, responseCode);
         if (payment) {
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("oke", "Thanh toán thành công !", null));
-
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObject("failed", "Thanh toán thất bại!", null));
 
         }
     }
-
-
 }

@@ -1,11 +1,19 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
-import nlu.edu.vn.ecommerce.dto.CartDTO;
-import nlu.edu.vn.ecommerce.dto.OrderStatisticsDTO;
+import nlu.edu.vn.ecommerce.dto.cart.CartDTO;
+import nlu.edu.vn.ecommerce.dto.statistics.OrderStatisticsDTO;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
-import nlu.edu.vn.ecommerce.models.*;
+import nlu.edu.vn.ecommerce.models.cart.Cart;
+import nlu.edu.vn.ecommerce.models.cart.CartItem;
 import nlu.edu.vn.ecommerce.models.enums.*;
-import nlu.edu.vn.ecommerce.repositories.*;
+import nlu.edu.vn.ecommerce.models.order.Order;
+import nlu.edu.vn.ecommerce.models.product.Product;
+import nlu.edu.vn.ecommerce.models.shop.Shop;
+import nlu.edu.vn.ecommerce.repositories.cart.CartRepository;
+import nlu.edu.vn.ecommerce.repositories.order.OrderManager;
+import nlu.edu.vn.ecommerce.repositories.order.OrderRepository;
+import nlu.edu.vn.ecommerce.repositories.product.ProductRepository;
+import nlu.edu.vn.ecommerce.repositories.shop.ShopRepository;
 import nlu.edu.vn.ecommerce.services.IOrderService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +40,6 @@ public class OrderServiceImpl implements IOrderService {
     private ShopRepository shopRepository;
     @Autowired
     private ProductRepository productRepository;
-
     @Override
     public String order(CartDTO cartDTO, String userId) {
         List<Cart> cartList = cartRepository.getCartByUserId(userId);
@@ -80,20 +87,15 @@ public class OrderServiceImpl implements IOrderService {
         }
         return null;
     }
-
     @Override
     public Page<Order> findByShopId(String shopId, Pageable pageable) {
 
         return orderRepository.findByShopId(shopId, pageable);
     }
-
-
     @Override
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
-
-
     @Override
     public boolean updateOrderStatusDelivered(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -109,7 +111,6 @@ public class OrderServiceImpl implements IOrderService {
         }
 
     }
-
     @Override
     public boolean updateOrderStatusCanceled(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -125,7 +126,6 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
-
     @Override
     public boolean updateOrderStatusReady(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -144,7 +144,6 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
-
     @Override
     public boolean updateOrderStatusShipping(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -159,7 +158,6 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
-
     @Override
     public boolean updateOrderStatusReturned(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -174,20 +172,16 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
-
-
     @Override
     public Page<Order> getOrdersByShopIdAndStatus(String shopId, String orderStatus, Pageable pageable) {
         OrderStatus status = OrderStatus.valueOf(orderStatus);
         return orderRepository.findByShopIdAndOrderStatus(shopId, status, pageable);
     }
-
     @Override
     public Page<Order> findByShopIdOrderByCreatedAtDesc(String shopId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createAt"));
         return orderRepository.findByShopIdOrderByCreateAtDesc(shopId, pageable);
     }
-
     public boolean deleteOrderById(String id) {
         if (orderRepository.existsById(id)) {
             orderRepository.deleteById(id);
@@ -195,7 +189,6 @@ public class OrderServiceImpl implements IOrderService {
         }
         return false;
     }
-
     @Override
     public Optional<Order> findById(String id) {
         return orderRepository.findById(id);
@@ -208,7 +201,6 @@ public class OrderServiceImpl implements IOrderService {
         }
         return totalSales;
     }
-
     @Override
     public List<OrderStatisticsDTO> getOrdersByWeek(String shopId) {
         Optional<Shop> shop = shopRepository.findById(shopId);
@@ -235,7 +227,6 @@ public class OrderServiceImpl implements IOrderService {
         }
         return orderStatisticsList;
     }
-
 
     @Override
     public List<OrderStatisticsDTO> getOrdersByMonth(String shopId) {

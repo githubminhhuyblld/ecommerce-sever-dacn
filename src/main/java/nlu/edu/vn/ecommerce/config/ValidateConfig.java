@@ -6,6 +6,11 @@ import org.springframework.context.annotation.Configuration;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+/**
+ * @author Minh Huy
+ *
+ * ValidateConfig class.
+ */
 @Configuration
 public class ValidateConfig {
 

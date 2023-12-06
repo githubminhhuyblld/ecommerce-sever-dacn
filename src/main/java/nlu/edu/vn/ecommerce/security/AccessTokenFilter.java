@@ -3,7 +3,7 @@ package nlu.edu.vn.ecommerce.security;
 
 import lombok.extern.log4j.Log4j2;
 import nlu.edu.vn.ecommerce.jwt.JwtHelper;
-import nlu.edu.vn.ecommerce.models.User;
+import nlu.edu.vn.ecommerce.models.user.User;
 import nlu.edu.vn.ecommerce.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

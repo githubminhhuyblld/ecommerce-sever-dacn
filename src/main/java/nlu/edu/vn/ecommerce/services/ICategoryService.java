@@ -1,8 +1,8 @@
 package nlu.edu.vn.ecommerce.services;
 
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
-import nlu.edu.vn.ecommerce.models.Category;
-import nlu.edu.vn.ecommerce.request.CategoryRequest;
+import nlu.edu.vn.ecommerce.models.categories.Category;
+import nlu.edu.vn.ecommerce.request.categories.CategoryRequest;
 
 import java.util.List;
 

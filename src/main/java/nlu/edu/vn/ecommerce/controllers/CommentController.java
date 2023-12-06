@@ -1,7 +1,7 @@
 package nlu.edu.vn.ecommerce.controllers;
 
-import nlu.edu.vn.ecommerce.dto.CommentDTO;
-import nlu.edu.vn.ecommerce.dto.CommentResponseDTO;
+import nlu.edu.vn.ecommerce.dto.comment.CommentDTO;
+import nlu.edu.vn.ecommerce.dto.comment.CommentResponseDTO;
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
 import nlu.edu.vn.ecommerce.services.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,10 @@
 package nlu.edu.vn.ecommerce.services;
 
 
-import nlu.edu.vn.ecommerce.models.Address;
-import nlu.edu.vn.ecommerce.models.User;
-import nlu.edu.vn.ecommerce.request.AddressRequest;
-import nlu.edu.vn.ecommerce.request.UpdateUserRequest;
+import nlu.edu.vn.ecommerce.models.address.Address;
+import nlu.edu.vn.ecommerce.models.user.User;
+import nlu.edu.vn.ecommerce.request.address.AddressRequest;
+import nlu.edu.vn.ecommerce.request.user.UpdateUserRequest;
 
 public interface IUserService {
     boolean checkUsernameExits(String username);

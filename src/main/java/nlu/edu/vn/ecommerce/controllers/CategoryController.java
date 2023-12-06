@@ -2,8 +2,8 @@ package nlu.edu.vn.ecommerce.controllers;
 
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.exception.ResponseObject;
-import nlu.edu.vn.ecommerce.models.Category;
-import nlu.edu.vn.ecommerce.request.CategoryRequest;
+import nlu.edu.vn.ecommerce.models.categories.Category;
+import nlu.edu.vn.ecommerce.request.categories.CategoryRequest;
 import nlu.edu.vn.ecommerce.services.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

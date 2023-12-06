@@ -1,20 +1,18 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
-import nlu.edu.vn.ecommerce.dto.ShopDTO;
-import nlu.edu.vn.ecommerce.models.Cart;
-import nlu.edu.vn.ecommerce.models.CartItem;
-import nlu.edu.vn.ecommerce.models.Product;
-import nlu.edu.vn.ecommerce.models.Shop;
-import nlu.edu.vn.ecommerce.repositories.CartRepository;
-import nlu.edu.vn.ecommerce.repositories.ProductRepository;
-import nlu.edu.vn.ecommerce.repositories.ShopRepository;
+import nlu.edu.vn.ecommerce.dto.shop.ShopDTO;
+import nlu.edu.vn.ecommerce.models.cart.Cart;
+import nlu.edu.vn.ecommerce.models.cart.CartItem;
+import nlu.edu.vn.ecommerce.models.product.Product;
+import nlu.edu.vn.ecommerce.models.shop.Shop;
+import nlu.edu.vn.ecommerce.repositories.cart.CartRepository;
+import nlu.edu.vn.ecommerce.repositories.product.ProductRepository;
+import nlu.edu.vn.ecommerce.repositories.shop.ShopRepository;
 import nlu.edu.vn.ecommerce.services.ICartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 

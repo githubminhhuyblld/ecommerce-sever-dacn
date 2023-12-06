@@ -1,12 +1,18 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
-import nlu.edu.vn.ecommerce.models.*;
-import nlu.edu.vn.ecommerce.repositories.CategoryRepository;
-import nlu.edu.vn.ecommerce.repositories.ProductRepository;
-import nlu.edu.vn.ecommerce.repositories.ShopRepository;
-import nlu.edu.vn.ecommerce.repositories.UserRepository;
-import nlu.edu.vn.ecommerce.request.ProductRequest;
+import nlu.edu.vn.ecommerce.models.attribute.Color;
+import nlu.edu.vn.ecommerce.models.attribute.Image;
+import nlu.edu.vn.ecommerce.models.attribute.Size;
+import nlu.edu.vn.ecommerce.models.categories.Category;
+import nlu.edu.vn.ecommerce.models.product.Product;
+import nlu.edu.vn.ecommerce.models.shop.Shop;
+import nlu.edu.vn.ecommerce.models.user.User;
+import nlu.edu.vn.ecommerce.repositories.category.CategoryRepository;
+import nlu.edu.vn.ecommerce.repositories.product.ProductRepository;
+import nlu.edu.vn.ecommerce.repositories.shop.ShopRepository;
+import nlu.edu.vn.ecommerce.repositories.user.UserRepository;
+import nlu.edu.vn.ecommerce.request.product.ProductRequest;
 import nlu.edu.vn.ecommerce.services.IProductService;
 import nlu.edu.vn.ecommerce.untils.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;

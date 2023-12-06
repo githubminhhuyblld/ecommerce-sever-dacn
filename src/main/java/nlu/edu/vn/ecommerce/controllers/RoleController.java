@@ -2,7 +2,7 @@ package nlu.edu.vn.ecommerce.controllers;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import nlu.edu.vn.ecommerce.request.RoleRequest;
+import nlu.edu.vn.ecommerce.request.role.RoleRequest;
 import nlu.edu.vn.ecommerce.services.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

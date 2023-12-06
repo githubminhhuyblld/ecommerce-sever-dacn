@@ -1,7 +1,5 @@
 package nlu.edu.vn.ecommerce.services;
 
-import nlu.edu.vn.ecommerce.dto.TransactionStatus;
-
 public interface IPaymentService {
     String createOrder(int total, String orderInfor, String urlReturn);
 
