@@ -27,9 +27,4 @@ public interface IOrderService {
     List<OrderStatisticsDTO> getOrdersByMonth(String shopId);
     List<OrderStatisticsDTO> getOrdersBySixMonth(String shopId);
 
-
-
-
-
-
 }

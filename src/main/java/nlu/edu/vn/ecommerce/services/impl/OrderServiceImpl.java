@@ -1,15 +1,18 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.dto.cart.CartDTO;
+import nlu.edu.vn.ecommerce.dto.customer.CustomerDTO;
 import nlu.edu.vn.ecommerce.dto.statistics.OrderStatisticsDTO;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.models.cart.Cart;
 import nlu.edu.vn.ecommerce.models.cart.CartItem;
+import nlu.edu.vn.ecommerce.models.customer.Customer;
 import nlu.edu.vn.ecommerce.models.enums.*;
 import nlu.edu.vn.ecommerce.models.order.Order;
 import nlu.edu.vn.ecommerce.models.product.Product;
 import nlu.edu.vn.ecommerce.models.shop.Shop;
 import nlu.edu.vn.ecommerce.repositories.cart.CartRepository;
+import nlu.edu.vn.ecommerce.repositories.customer.CustomerManager;
 import nlu.edu.vn.ecommerce.repositories.order.OrderManager;
 import nlu.edu.vn.ecommerce.repositories.order.OrderRepository;
 import nlu.edu.vn.ecommerce.repositories.product.ProductRepository;
@@ -40,21 +43,25 @@ public class OrderServiceImpl implements IOrderService {
     private ShopRepository shopRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private CustomerManager customerManager;
     @Override
     public String order(CartDTO cartDTO, String userId) {
         List<Cart> cartList = cartRepository.getCartByUserId(userId);
         if (cartList != null && !cartList.isEmpty()) {
+            List<Customer> customers = createCustomersFromCartDTO(cartDTO);
             Order order = new Order();
             order.setUserId(userId);
             BigDecimal totalOrderPrice = BigDecimal.ZERO;
-
-
             for (CartItem cartItem : cartDTO.getCartItems()) {
                 cartItem.setComment(CommentStatus.UNCOMMENTED);
                 BigDecimal itemTotalPrice = cartItem.getNewPrice().multiply(new BigDecimal(cartItem.getAmount()));
                 totalOrderPrice = totalOrderPrice.add(itemTotalPrice);
             }
-
+            //save customer info by shopId
+            for (Customer customer : customers) {
+                customerManager.createCustomer(Customer.fromToDto(customer),userId);
+            }
             order.setTotalPrice(totalOrderPrice);
             order.setCartItems(cartDTO.getCartItems());
             order.setAddress(cartDTO.getAddress());
@@ -80,12 +87,24 @@ public class OrderServiceImpl implements IOrderService {
             // Delete only the cart items that were ordered
             for (CartItem orderedItem : cartDTO.getCartItems()) {
                 cartRepository.deleteByUserIdAndCartItemProductId(userId, orderedItem.getProductId());
-
             }
-
             return savedOrder.getId();
         }
         return null;
+    }
+    private List<Customer> createCustomersFromCartDTO(CartDTO cartDTO) {
+        List<Customer> customers = new ArrayList<>();
+        for (CartItem cartItem : cartDTO.getCartItems()) {
+            Customer customer = new Customer();
+            customer.setName(cartDTO.getName());
+            customer.setEmail(cartDTO.getEmail());
+            customer.setNumberPhone(cartDTO.getNumberPhone());
+            customer.setAddress(cartDTO.getAddress());
+            customer.setShopId(cartItem.getShop().getId());
+            customer.setStatus(ActiveStatus.ACTIVE);
+            customers.add(customer);
+        }
+        return customers;
     }
     @Override
     public Page<Order> findByShopId(String shopId, Pageable pageable) {
@@ -129,7 +148,6 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public boolean updateOrderStatusReady(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
-
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
             order.setOrderStatus(OrderStatus.READY);
@@ -255,8 +273,6 @@ public class OrderServiceImpl implements IOrderService {
         }
         return monthlyStatistics;
     }
-
-
     @Override
     public List<OrderStatisticsDTO> getOrdersBySixMonth(String shopId) {
         LocalDate today = LocalDate.now();

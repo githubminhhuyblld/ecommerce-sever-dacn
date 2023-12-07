@@ -1,5 +1,6 @@
 package nlu.edu.vn.ecommerce.repositories.order;
 
+import nlu.edu.vn.ecommerce.base.BaseEntityManager;
 import nlu.edu.vn.ecommerce.models.order.Order;
 import nlu.edu.vn.ecommerce.models.enums.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,14 @@ import java.util.List;
 import static nlu.edu.vn.ecommerce.untils.Timestamp.convertLocalDateToTimestamp;
 
 @Repository
-public class OrderManager {
-    private final String COLLECTION = "order";
+public class OrderManager extends BaseEntityManager<Order> {
+    private static final String ORDER_COLLECTION = "order";
     @Autowired
     private MongoTemplate mongoTemplate;
-
-    public List<Order> findOrdersDelivered(String shopId,LocalDate startDate, LocalDate endDate) {
+    public OrderManager() {
+        super(ORDER_COLLECTION, Order.class);
+    }
+    public List<Order> findOrdersDelivered(String shopId, LocalDate startDate, LocalDate endDate) {
         long startTimestamp = convertLocalDateToTimestamp(startDate);
         long endTimestamp = convertLocalDateToTimestamp(endDate);
         Criteria criteria = Criteria.where("shopId").is(shopId)
@@ -32,7 +35,8 @@ public class OrderManager {
         Query query = Query.query(criteria);
         return mongoTemplate.find(query, Order.class);
     }
-    public List<Order> findOrdersCanceled(String shopId,LocalDate startDate, LocalDate endDate) {
+
+    public List<Order> findOrdersCanceled(String shopId, LocalDate startDate, LocalDate endDate) {
         long startTimestamp = convertLocalDateToTimestamp(startDate);
         long endTimestamp = convertLocalDateToTimestamp(endDate);
         Criteria criteria = Criteria.where("shopId").is(shopId)
@@ -41,7 +45,8 @@ public class OrderManager {
         Query query = Query.query(criteria);
         return mongoTemplate.find(query, Order.class);
     }
-    public List<Order> findOrdersDeliveredByStartDate(String shopId,LocalDate startDate) {
+
+    public List<Order> findOrdersDeliveredByStartDate(String shopId, LocalDate startDate) {
         LocalDateTime startOfDay = startDate.atStartOfDay();
         LocalDateTime endOfDay = startDate.atTime(LocalTime.MAX);
 
@@ -53,6 +58,7 @@ public class OrderManager {
                 .and("orderStatus").is(OrderStatus.DELIVERED.toString()));
         return mongoTemplate.find(query, Order.class);
     }
+
     public List<Order> findOrdersCanceledByStartDate(String shopId, LocalDate startDate) {
         LocalDateTime startOfDay = startDate.atStartOfDay();
         LocalDateTime endOfDay = startDate.atTime(LocalTime.MAX);
@@ -80,11 +86,8 @@ public class OrderManager {
         Query query = Query.query(criteria);
         query.with(Sort.by(Sort.Order.desc("createAt")));
 
-        return mongoTemplate.find(query, Order.class, COLLECTION);
+        return mongoTemplate.find(query, Order.class, ORDER_COLLECTION);
     }
-
-
-
 
 
 }
