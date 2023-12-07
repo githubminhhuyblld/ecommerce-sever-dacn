@@ -16,8 +16,6 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
-import static nlu.edu.vn.ecommerce.untils.Timestamp.convertLocalDateToTimestamp;
-
 @Repository
 public class OrderManager extends BaseEntityManager<Order> {
     private static final String ORDER_COLLECTION = "order";
@@ -26,26 +24,22 @@ public class OrderManager extends BaseEntityManager<Order> {
     public OrderManager() {
         super(ORDER_COLLECTION, Order.class);
     }
-    public List<Order> findOrdersDelivered(String shopId, LocalDate startDate, LocalDate endDate) {
-        long startTimestamp = convertLocalDateToTimestamp(startDate);
-        long endTimestamp = convertLocalDateToTimestamp(endDate);
-        Criteria criteria = Criteria.where("shopId").is(shopId)
-                .and("createAt").gte(startTimestamp).lte(endTimestamp)
-                .and("orderStatus").is(OrderStatus.DELIVERED.toString());
-        Query query = Query.query(criteria);
-        return mongoTemplate.find(query, Order.class);
-    }
 
-    public List<Order> findOrdersCanceled(String shopId, LocalDate startDate, LocalDate endDate) {
-        long startTimestamp = convertLocalDateToTimestamp(startDate);
-        long endTimestamp = convertLocalDateToTimestamp(endDate);
+
+    public List<Order> findOrdersCanceled(String shopId, long startTimestamp, long endTimestamp) {
         Criteria criteria = Criteria.where("shopId").is(shopId)
                 .and("createAt").gte(startTimestamp).lte(endTimestamp)
                 .and("orderStatus").is(OrderStatus.CANCELED.toString());
         Query query = Query.query(criteria);
         return mongoTemplate.find(query, Order.class);
     }
-
+    public List<Order> findOrdersDelivered(String shopId, long startTimestamp, long endTimestamp) {
+        Criteria criteria = Criteria.where("shopId").is(shopId)
+                .and("createAt").gte(startTimestamp).lte(endTimestamp)
+                .and("orderStatus").is(OrderStatus.DELIVERED.toString());
+        Query query = Query.query(criteria);
+        return mongoTemplate.find(query, Order.class);
+    }
     public List<Order> findOrdersDeliveredByStartDate(String shopId, LocalDate startDate) {
         LocalDateTime startOfDay = startDate.atStartOfDay();
         LocalDateTime endOfDay = startDate.atTime(LocalTime.MAX);

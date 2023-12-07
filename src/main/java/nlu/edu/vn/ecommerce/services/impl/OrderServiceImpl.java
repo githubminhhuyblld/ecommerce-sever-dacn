@@ -1,7 +1,6 @@
 package nlu.edu.vn.ecommerce.services.impl;
 
 import nlu.edu.vn.ecommerce.dto.cart.CartDTO;
-import nlu.edu.vn.ecommerce.dto.customer.CustomerDTO;
 import nlu.edu.vn.ecommerce.dto.statistics.OrderStatisticsDTO;
 import nlu.edu.vn.ecommerce.exception.NotFoundException;
 import nlu.edu.vn.ecommerce.models.cart.Cart;
@@ -246,7 +245,6 @@ public class OrderServiceImpl implements IOrderService {
         return orderStatisticsList;
     }
 
-    @Override
     public List<OrderStatisticsDTO> getOrdersByMonth(String shopId) {
         Optional<Shop> shop = shopRepository.findById(shopId);
         if (shop.isEmpty()) {
@@ -257,13 +255,19 @@ public class OrderServiceImpl implements IOrderService {
         int numberOfWeeksInMonth = yearMonth.lengthOfMonth() / 7;
         List<OrderStatisticsDTO> monthlyStatistics = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
         for (int week = 1; week <= numberOfWeeksInMonth; week++) {
             LocalDate startOfWeek = yearMonth.atDay(1).plusDays((week - 1) * 7);
-            LocalDate endOfWeek = startOfWeek.plusDays(6);
+            LocalDate endOfWeek = startOfWeek.plusDays(7).atTime(LocalTime.MAX).toLocalDate();
             String fromTo = startOfWeek.format(formatter) + " - " + endOfWeek.format(formatter);
-            List<Order> canceledOrders = orderManager.findOrdersCanceled(shopId, startOfWeek, endOfWeek);
-            List<Order> deliveredOrders = orderManager.findOrdersDelivered(shopId, startOfWeek, endOfWeek);
+
+            long startTimestamp = new Timestamp().convertLocalDateToTimestamp(startOfWeek);
+            long endTimestamp = new Timestamp().convertLocalDateToTimestamp(endOfWeek);
+
+            List<Order> canceledOrders = orderManager.findOrdersCanceled(shopId, startTimestamp, endTimestamp);
+            List<Order> deliveredOrders = orderManager.findOrdersDelivered(shopId, startTimestamp, endTimestamp);
             BigDecimal dailyTotalSale = calculateTotalSales(deliveredOrders);
+
             OrderStatisticsDTO orderStatisticsDTO = new OrderStatisticsDTO();
             orderStatisticsDTO.setFromTo(fromTo);
             orderStatisticsDTO.setCancelOrder(canceledOrders);
@@ -271,6 +275,7 @@ public class OrderServiceImpl implements IOrderService {
             orderStatisticsDTO.setTotalSale(dailyTotalSale);
             monthlyStatistics.add(orderStatisticsDTO);
         }
+
         return monthlyStatistics;
     }
     @Override
@@ -284,10 +289,11 @@ public class OrderServiceImpl implements IOrderService {
         while (sixMonthsAgo.isBefore(today)) {
             LocalDate startOfMonth = sixMonthsAgo.with(TemporalAdjusters.firstDayOfMonth());
             LocalDate endOfMonth = sixMonthsAgo.with(TemporalAdjusters.lastDayOfMonth());
-
+            long startTimestamp = new Timestamp().convertLocalDateToTimestamp(startOfMonth);
+            long endTimestamp  = new Timestamp().convertLocalDateToTimestamp(endOfMonth);
             String fromTo = startOfMonth.format(formatter) + " - " + endOfMonth.format(formatter);
-            List<Order> canceledOrders = orderManager.findOrdersCanceled(shopId, startOfMonth, endOfMonth);
-            List<Order> deliveredOrders = orderManager.findOrdersDelivered(shopId, startOfMonth, endOfMonth);
+            List<Order> canceledOrders = orderManager.findOrdersCanceled(shopId, startTimestamp, endTimestamp);
+            List<Order> deliveredOrders = orderManager.findOrdersDelivered(shopId, startTimestamp, endTimestamp);
             BigDecimal dailyTotalSale = calculateTotalSales(deliveredOrders);
             OrderStatisticsDTO orderStatisticsDTO = new OrderStatisticsDTO();
             orderStatisticsDTO.setFromTo(fromTo);
