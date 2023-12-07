@@ -29,7 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-
 @Service
 public class OrderServiceImpl implements IOrderService {
     @Autowired
@@ -59,7 +58,10 @@ public class OrderServiceImpl implements IOrderService {
             }
             //save customer info by shopId
             for (Customer customer : customers) {
-                customerManager.createCustomer(Customer.fromToDto(customer),userId);
+                Customer existingCustomer = customerManager.findByEmailAndShopId(customer.getEmail(), customer.getShopId());
+                if (existingCustomer == null) {
+                    customerManager.createCustomer(Customer.fromToDto(customer), userId);
+                }
             }
             order.setTotalPrice(totalOrderPrice);
             order.setCartItems(cartDTO.getCartItems());

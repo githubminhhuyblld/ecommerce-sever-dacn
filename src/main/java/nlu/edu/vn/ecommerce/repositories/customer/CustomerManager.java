@@ -6,6 +6,8 @@ import nlu.edu.vn.ecommerce.models.customer.Customer;
 import nlu.edu.vn.ecommerce.models.enums.ActiveStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -26,6 +28,11 @@ public class CustomerManager extends BaseEntityManager<Customer> {
         customer.setShopId(customerDTO.getShopId());
         customer.setStatus(ActiveStatus.ACTIVE);
         return (Customer) create(customer,createBy);
+    }
+    public Customer findByEmailAndShopId(String email, String shopId) {
+        Criteria criteria = Criteria.where("email").is(email).and("shopId").is(shopId);
+        Query query = new Query(criteria);
+        return mongoTemplate.findOne(query, Customer.class);
     }
 
 }

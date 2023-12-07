@@ -24,8 +24,6 @@ public class OrderManager extends BaseEntityManager<Order> {
     public OrderManager() {
         super(ORDER_COLLECTION, Order.class);
     }
-
-
     public List<Order> findOrdersCanceled(String shopId, long startTimestamp, long endTimestamp) {
         Criteria criteria = Criteria.where("shopId").is(shopId)
                 .and("createAt").gte(startTimestamp).lte(endTimestamp)
