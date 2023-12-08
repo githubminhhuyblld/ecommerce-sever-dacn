@@ -5,6 +5,6 @@ import nlu.edu.vn.ecommerce.dto.customer.CustomerDTO;
 import java.util.List;
 
 public interface ICustomerService {
-     List<CustomerDTO> getAllCustomersByShopId(String shopId);
+     List<CustomerDTO> findByShopId(String shopId);
      CustomerDTO createCustomer(CustomerDTO customerDTO,String userId);
 }

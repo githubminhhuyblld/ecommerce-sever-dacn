@@ -29,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+
 @Service
 public class OrderServiceImpl implements IOrderService {
     @Autowired
@@ -43,6 +44,7 @@ public class OrderServiceImpl implements IOrderService {
     private ProductRepository productRepository;
     @Autowired
     private CustomerManager customerManager;
+
     @Override
     public String order(CartDTO cartDTO, String userId) {
         List<Cart> cartList = cartRepository.getCartByUserId(userId);
@@ -93,6 +95,7 @@ public class OrderServiceImpl implements IOrderService {
         }
         return null;
     }
+
     private List<Customer> createCustomersFromCartDTO(CartDTO cartDTO) {
         List<Customer> customers = new ArrayList<>();
         for (CartItem cartItem : cartDTO.getCartItems()) {
@@ -102,20 +105,24 @@ public class OrderServiceImpl implements IOrderService {
             customer.setNumberPhone(cartDTO.getNumberPhone());
             customer.setAddress(cartDTO.getAddress());
             customer.setShopId(cartItem.getShop().getId());
+            customer.setUserId(cartDTO.getUserId());
             customer.setStatus(ActiveStatus.ACTIVE);
             customers.add(customer);
         }
         return customers;
     }
+
     @Override
     public Page<Order> findByShopId(String shopId, Pageable pageable) {
 
         return orderRepository.findByShopId(shopId, pageable);
     }
+
     @Override
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
+
     @Override
     public boolean updateOrderStatusDelivered(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -131,6 +138,7 @@ public class OrderServiceImpl implements IOrderService {
         }
 
     }
+
     @Override
     public boolean updateOrderStatusCanceled(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -146,6 +154,7 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
+
     @Override
     public boolean updateOrderStatusReady(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -163,6 +172,7 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
+
     @Override
     public boolean updateOrderStatusShipping(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -177,6 +187,7 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
+
     @Override
     public boolean updateOrderStatusReturned(String orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -191,16 +202,19 @@ public class OrderServiceImpl implements IOrderService {
             return false;
         }
     }
+
     @Override
     public Page<Order> getOrdersByShopIdAndStatus(String shopId, String orderStatus, Pageable pageable) {
         OrderStatus status = OrderStatus.valueOf(orderStatus);
         return orderRepository.findByShopIdAndOrderStatus(shopId, status, pageable);
     }
+
     @Override
     public Page<Order> findByShopIdOrderByCreatedAtDesc(String shopId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createAt"));
         return orderRepository.findByShopIdOrderByCreateAtDesc(shopId, pageable);
     }
+
     public boolean deleteOrderById(String id) {
         if (orderRepository.existsById(id)) {
             orderRepository.deleteById(id);
@@ -208,6 +222,7 @@ public class OrderServiceImpl implements IOrderService {
         }
         return false;
     }
+
     @Override
     public Optional<Order> findById(String id) {
         return orderRepository.findById(id);
@@ -220,6 +235,7 @@ public class OrderServiceImpl implements IOrderService {
         }
         return totalSales;
     }
+
     @Override
     public List<OrderStatisticsDTO> getOrdersByWeek(String shopId) {
         Optional<Shop> shop = shopRepository.findById(shopId);
@@ -280,6 +296,7 @@ public class OrderServiceImpl implements IOrderService {
 
         return monthlyStatistics;
     }
+
     @Override
     public List<OrderStatisticsDTO> getOrdersBySixMonth(String shopId) {
         LocalDate today = LocalDate.now();
@@ -292,7 +309,7 @@ public class OrderServiceImpl implements IOrderService {
             LocalDate startOfMonth = sixMonthsAgo.with(TemporalAdjusters.firstDayOfMonth());
             LocalDate endOfMonth = sixMonthsAgo.with(TemporalAdjusters.lastDayOfMonth());
             long startTimestamp = new Timestamp().convertLocalDateToTimestamp(startOfMonth);
-            long endTimestamp  = new Timestamp().convertLocalDateToTimestamp(endOfMonth);
+            long endTimestamp = new Timestamp().convertLocalDateToTimestamp(endOfMonth);
             String fromTo = startOfMonth.format(formatter) + " - " + endOfMonth.format(formatter);
             List<Order> canceledOrders = orderManager.findOrdersCanceled(shopId, startTimestamp, endTimestamp);
             List<Order> deliveredOrders = orderManager.findOrdersDelivered(shopId, startTimestamp, endTimestamp);
@@ -310,6 +327,14 @@ public class OrderServiceImpl implements IOrderService {
         return monthlyStatistics;
     }
 
+    @Override
+    public List<Order> findOrdersByShopAndEmail(String shopId, String email) {
+        Optional<Shop> shop = shopRepository.findById(shopId);
+        if (shop.isEmpty()) {
+            throw new NotFoundException("Shop Id" + shopId + "not found");
+        }
+        return orderManager.findOrdersByShopAndEmail(shopId, email);
+    }
 
     @Override
     public Page<Order> getOrdersForUser(String userId, int page, int size) {
@@ -358,8 +383,8 @@ public class OrderServiceImpl implements IOrderService {
         return splitOrders;
     }
 
-    //    @Scheduled(cron = "0 0 0 * * ?")
-    @Scheduled(fixedRate = 30000) // Chạy tác vụ mỗi 30 giây
+    //    @Scheduled(fixedRate = 30000) // Chạy tác vụ mỗi 30 giây
+    @Scheduled(cron = "0 0 0 * * ?")
     public void autoDeliverOrders() {
         List<Order> readyOrders = orderRepository.findByOrderStatus(OrderStatus.READY);
         Date now = new Date();

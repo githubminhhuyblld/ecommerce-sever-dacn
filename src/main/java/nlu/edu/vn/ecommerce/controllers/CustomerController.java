@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/customers")
 public class CustomerController {
@@ -26,5 +28,20 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Processing failed " + e.getMessage());
         }
     }
+
+    @GetMapping("/shop/{shopId}")
+    public ResponseEntity<?> getCustomersByShopId(@PathVariable String shopId) {
+        try {
+            List<CustomerDTO> customers = iCustomerService.findByShopId(shopId);
+            if (customers != null && !customers.isEmpty()) {
+                return ResponseEntity.ok(customers);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No customers found for shopId: " + shopId);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Processing failed: " + e.getMessage());
+        }
+    }
+
 
 }

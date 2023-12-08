@@ -50,7 +50,6 @@ public class OrderManager extends BaseEntityManager<Order> {
                 .and("orderStatus").is(OrderStatus.DELIVERED.toString()));
         return mongoTemplate.find(query, Order.class);
     }
-
     public List<Order> findOrdersCanceledByStartDate(String shopId, LocalDate startDate) {
         LocalDateTime startOfDay = startDate.atStartOfDay();
         LocalDateTime endOfDay = startDate.atTime(LocalTime.MAX);
@@ -63,7 +62,6 @@ public class OrderManager extends BaseEntityManager<Order> {
                 .and("orderStatus").is(OrderStatus.CANCELED.toString()));
         return mongoTemplate.find(query, Order.class);
     }
-
     public List<Order> findOrdersForUser(String userId, LocalDate cutoffDate) {
         LocalDateTime cutoffDateTime = cutoffDate.atStartOfDay();
         long cutoffTimestamp = cutoffDateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
@@ -80,6 +78,13 @@ public class OrderManager extends BaseEntityManager<Order> {
 
         return mongoTemplate.find(query, Order.class, ORDER_COLLECTION);
     }
+    public List<Order> findOrdersByShopAndEmail(String shopId, String email) {
+        Criteria criteria = Criteria.where("shopId").is(shopId).and("email").is(email);
+        Query query = Query.query(criteria);
+        query.with(Sort.by(Sort.Order.desc("createAt")));
+        return mongoTemplate.find(query, Order.class);
+    }
+
 
 
 }

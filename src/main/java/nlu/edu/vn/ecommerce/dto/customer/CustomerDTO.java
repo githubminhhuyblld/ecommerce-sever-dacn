@@ -15,4 +15,6 @@ public class CustomerDTO {
 
     private String shopId;
 
+    private String userId;
+
 }

@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class CustomerManager extends BaseEntityManager<Customer> {
     private static final String ORDER_COLLECTION = "customers";
@@ -26,6 +28,7 @@ public class CustomerManager extends BaseEntityManager<Customer> {
         customer.setNumberPhone(customerDTO.getNumberPhone());
         customer.setAddress(customerDTO.getAddress());
         customer.setShopId(customerDTO.getShopId());
+        customer.setUserId(customerDTO.getUserId());
         customer.setStatus(ActiveStatus.ACTIVE);
         return (Customer) create(customer,createBy);
     }
@@ -34,5 +37,12 @@ public class CustomerManager extends BaseEntityManager<Customer> {
         Query query = new Query(criteria);
         return mongoTemplate.findOne(query, Customer.class);
     }
+
+    public List<Customer> findByShopId(String shopId) {
+        Criteria criteria = Criteria.where("shopId").is(shopId);
+        Query query = new Query(criteria);
+        return mongoTemplate.find(query, Customer.class);
+    }
+
 
 }

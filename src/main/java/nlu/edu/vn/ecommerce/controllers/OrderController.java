@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -201,6 +202,16 @@ public class OrderController {
         boolean deleted = iOrderService.deleteOrderById(id);
         return ResponseEntity.ok().body(deleted);
     }
+    @GetMapping("/shop/{shopId}/email/{email}")
+    public ResponseEntity<?> getOrdersByShopIdAndEmail(@PathVariable String shopId, @PathVariable String email) {
+        try {
+            List<Order> orders = iOrderService.findOrdersByShopAndEmail(shopId, email);
+            return ResponseEntity.ok().body(new ResponseObject("oke","successfullly",orders));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Processing failed: " + e.getMessage());
+        }
+    }
+
 
     @GetMapping("/by-week")
     @PreAuthorize("#user.id == #userId")

@@ -27,6 +27,8 @@ public class Customer extends BaseEntity {
 
     private String shopId;
 
+    private String userId;
+
     private ActiveStatus status;
 
     public static CustomerDTO fromToDto(Customer customer){
@@ -36,6 +38,7 @@ public class Customer extends BaseEntity {
         customerDTO.setNumberPhone(customer.getNumberPhone());
         customerDTO.setAddress(customer.getAddress());
         customerDTO.setShopId(customer.getShopId());
+        customerDTO.setUserId(customer.getUserId());
         return customerDTO;
     }
 
